@@ -69,11 +69,11 @@ until END-ELEMENT is read. Returns two values :
 ### Class: output-stream
 Subclass of STREAM supporting WRITE operations.
 
-### Condition: stream-output-error
+#### Condition: stream-output-error
 An error which is signalled when an output error
 occurs on a stream.
 
-### Generic: write *output-stream* *element*
+#### Generic: write *output-stream* *element*
 Tries to write one element to STREAM.
 Returns a state indicator which is NIL if write succeeded,
 :EOF if end of file was reached, or
