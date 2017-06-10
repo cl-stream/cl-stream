@@ -21,7 +21,8 @@
 (defclass stream ()
   ((open-p :initform t
 	   :accessor stream-open-p
-	   :type boolean)))
+	   :type boolean))
+  (:documentation "Base class for all streams."))
 
 (defgeneric stream-element-type (stream)
   (:documentation "Returns the type of elements of STREAM."))
@@ -49,7 +50,7 @@ or write to a closed stream."))
            :stream stream)))
 
 (defgeneric close (stream)
-  (:documentation "Prevents further operations on STREAM
+  (:documentation "Prevents further read and write operations on STREAM
 causing them to raise STREAM-CLOSED-ERROR."))
 
 (defmethod close ((stream stream))
@@ -64,11 +65,14 @@ causing them to raise STREAM-CLOSED-ERROR."))
 			 ,@body)
 	 (close ,stream)))))
 
-(define-condition stream-input-error (stream-error)
-  ())
-
 (defclass input-stream (stream)
-  ())
+  ()
+  (:documentation "Subclass of STREAM supporting READ operations."))
+
+(define-condition stream-input-error (stream-error)
+  ()
+  (:documentation "An error which is signalled when an input error
+occurs on a stream."))
 
 (defgeneric read (input-stream)
   (:documentation "Tries to read one element from STREAM.
@@ -92,7 +96,7 @@ from START to END. Returns two values :
 from START to END until END-ELEMENT is read. Returns two values :
  the number of elements read, and
  a state indicator which is
-  NIL if READ-SEQUENCE succeeded
+  NIL if READ-SEQUENCE-UNTIL succeeded
   :EOF if end of file was reached
   :NON-BLOCKING if read would block."))
 
@@ -140,11 +144,14 @@ from START to END until END-ELEMENT is read. Returns two values :
 	   (:otherwise
 	    (error 'stream-input-error :stream stream)))))))
 
-(define-condition stream-output-error (stream-error)
-  ())
-
 (defclass output-stream (stream)
-  ())
+  ()
+  (:documentation "Subclass of STREAM supporting WRITE operations."))
+
+(define-condition stream-output-error (stream-error)
+  ()
+  (:documentation "An error which is signalled when an output error
+occurs on a stream."))
 
 (defgeneric write (output-stream element)
   (:documentation "Tries to write one element to STREAM.
@@ -249,13 +256,9 @@ Returns NIL if successful, or
 		 :type fixnum+)
    (output-length :initform 0
 		  :accessor stream-output-length
-		  :type fixnum+)))
-
-(defgeneric flush (buffered-output-stream)
-  (:documentation "Tries to flush the output buffer of BUFFERED-OUTPUT-STREAM.
-Returns NIL if output buffer was empty or emptied, or
-:EOF if end of file was reached, or
-:NON-BLOCKING if write would block."))
+		  :type fixnum+))
+  (:documentation "An output stream that buffers its writes until it
+gets flushed."))
 
 (defgeneric make-stream-output-buffer (buffered-output-stream)
   (:documentation "Returns a new output buffer for stream."))
@@ -265,10 +268,17 @@ Returns NIL if output buffer was empty or emptied, or
 MAKE-STREAM-OUTPUT-BUFFER to create it if needed."))
 
 (defgeneric stream-flush-output-buffer (buffered-output-stream)
-  (:documentation "Flushes the stream output buffer.
-Returns NIL if successful, or
-:EOF if end of file was reached, or
-:NON-BLOCKING if operation would block."))
+  (:documentation "Tries to flush once the stream output buffer. Returns
+ NIL if successful, or
+ :EOF if end of file was reached, or
+ :NON-BLOCKING if operation would block."))
+
+(defgeneric flush (buffered-output-stream)
+  (:documentation "Flushes the output buffer of BUFFERED-OUTPUT-STREAM
+by repeatedly calling STREAM-FLUSH-OUTPUT-BUFFER until empty. Returns
+ NIL if output buffer was empty or emptied, or
+ :EOF if end of file was reached, or
+ :NON-BLOCKING if write would block."))
 
 (defmethod make-stream-output-buffer ((stream buffered-output-stream))
   (make-array `(,(stream-output-buffer-size stream))
@@ -306,7 +316,8 @@ Returns NIL if successful, or
        (:otherwise (error 'stream-output-error :stream stream)))))
 
 (defclass sequence-input-stream (buffered-input-stream)
-  ())
+  ()
+  (:documentation "A buffered input stream that reads from a sequence."))
 
 (defmethod initialize-instance ((stream sequence-input-stream)
 				&rest initargs
@@ -329,6 +340,9 @@ Returns NIL if successful, or
   :eof)
 
 (defmacro with-input-from-sequence ((var sequence) &body body)
+  "Binds VAR to a new sequence input stream reading from SEQUENCE.
+The stream is closed after BODY returns normally or before it is
+aborted by a control transfer of some kind."
   (let ((stream (gensym "STREAM-")))
     `(let ((,stream (make-instance 'sequence-input-stream :sequence ,sequence)))
        (unwind-protect (let ((,var ,stream))
@@ -336,13 +350,19 @@ Returns NIL if successful, or
 	 (close ,stream)))))
 
 (defmacro with-input-from-string ((var string) &body body)
+  "Binds VAR to a new sequence input stream reading from STRING.
+The stream is closed after BODY returns normally or before it is
+aborted by a control transfer of some kind."
   `(with-input-from-sequence (,var (the string ,string))
      ,@body))
 
 (defclass sequence-output-stream (buffered-output-stream)
-  ())
+  ()
+  (:documentation "A buffered output stream that writes to a sequence."))
 
-(defgeneric sequence-output-stream-sequence (sequence-output-stream))
+(defgeneric sequence-output-stream-sequence (sequence-output-stream)
+  (:documentation "Returns the sequence that was written to
+SEQUENCE-OUTPUT-STREAM."))
 
 (defmethod sequence-output-stream-sequence ((stream sequence-output-stream))
   (subseq (stream-output-buffer stream) 0 (stream-output-length stream)))
@@ -370,6 +390,10 @@ Returns NIL if successful, or
 			`(,(+ (length output-buffer) *default-buffer-size*))))))
 
 (defmacro with-output-to-sequence ((var element-type) &body body)
+  "Binds VAR to a new sequence output stream with element-type
+ELEMENT-TYPE. Returns the sequence output stream sequence if
+BODY returns normally. The stream is closed after BODY returns
+normally or before it is aborted by a control transfer of some kind."
   (let ((stream (gensym "STREAM-")))
     `(let ((,stream (make-instance 'sequence-output-stream
 				   :element-type ,element-type)))
@@ -379,10 +403,21 @@ Returns NIL if successful, or
 	 (close ,stream)))))
 
 (defmacro with-output-to-string ((var) &body body)
+  "Binds VAR to a new sequence output stream with element-type
+character. Returns the sequence output stream string if
+BODY returns normally. The stream is closed after BODY returns
+normally or before it is aborted by a control transfer of some kind."
   `(with-output-to-sequence (,var 'character)
      ,@body))
 
-(defgeneric read-until (stream end-element))
+(defgeneric read-until (input-stream end-element)
+  (:documentation "Reads elements from INPUT-STREAM from START to END
+until END-ELEMENT is read. Returns two values :
+ a sequence of elements read, and
+ a state indicator which is
+  NIL if READ-UNTIL succeeded
+  :EOF if end of file was reached
+  :NON-BLOCKING if read would block."))
 
 (defmethod read-until ((stream input-stream) end-element)
   (block nil
