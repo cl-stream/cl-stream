@@ -295,6 +295,8 @@ MAKE-STREAM-OUTPUT-BUFFER to create it if needed."))
  :EOF if end of file was reached, or
  :NON-BLOCKING if operation would block."))
 
+(defgeneric stream-write-element-to-buffer (stream element))
+
 (defgeneric flush (buffered-output-stream)
   (:documentation "Flushes the output buffer of BUFFERED-OUTPUT-STREAM
 by repeatedly calling STREAM-FLUSH-OUTPUT-BUFFER until empty. Returns
@@ -315,21 +317,23 @@ by repeatedly calling STREAM-FLUSH-OUTPUT-BUFFER until empty. Returns
 (defmethod (setf stream-output-buffer) (value (stream buffered-output-stream))
   (setf (slot-value stream 'output-buffer) value))
 
+(defmethod stream-write-element-to-buffer ((stream buffered-output-stream)
+					   element)
+  (setf (aref (stream-output-buffer stream) (stream-output-length stream))
+	element)
+  (incf (stream-output-length stream))
+  nil)
+
 (defmethod write ((stream buffered-output-stream) element)
   (check-if-open stream)
   (assert (typep element (stream-element-type stream)))
-  (let ((buffer (stream-output-buffer stream)))
-    (flet ((write-element ()
-	     (setf (aref buffer (stream-output-length stream)) element)
-	     (incf (stream-output-length stream))
-	     nil))
-      (if (< (stream-output-length stream) (stream-output-buffer-size stream))
-	  (write-element)
-	  (case (stream-flush-output-buffer stream)
-	    ((nil) (write-element))
-	    ((:eof) (return-from write :eof))
-	    ((:non-blocking) (return-from write :non-blocking))
-	    (:otherwise (error 'stream-output-error :stream stream)))))))
+  (if (< (stream-output-length stream) (stream-output-buffer-size stream))
+      (stream-write-element-to-buffer stream element)
+      (case (stream-flush-output-buffer stream)
+	((nil) (stream-write-element-to-buffer stream element))
+	((:eof) (return-from write :eof))
+	((:non-blocking) (return-from write :non-blocking))
+	(:otherwise (error 'stream-output-error :stream stream)))))
 
 (defmethod flush ((stream buffered-output-stream))
   (loop
