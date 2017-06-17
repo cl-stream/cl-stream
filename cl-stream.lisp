@@ -223,6 +223,9 @@ to OUTPUT-STREAM. Returns two values :
   (:documentation "Returns the stream input buffer, calling
 MAKE-STREAM-INPUT-BUFFER to create it if needed."))
 
+(defgeneric (setf stream-input-buffer) (value buffered-input-stream)
+  (:documentation "Sets the stream input buffer."))
+
 (defgeneric stream-fill-input-buffer (buffered-input-stream)
   (:documentation "Fills the stream input buffer.
 Returns NIL if successful, or
@@ -238,6 +241,9 @@ Returns NIL if successful, or
       (slot-value stream 'input-buffer)
       (setf (slot-value stream 'input-buffer)
 	    (make-stream-input-buffer stream))))
+
+(defmethod (setf stream-input-buffer) (value (stream buffered-input-stream))
+  (setf (slot-value stream 'input-buffer) value))
 
 (defmethod read ((stream buffered-input-stream))
   (check-if-open stream)
