@@ -128,7 +128,7 @@ from START to END until END-ELEMENT is read. Returns two values :
 	    (return (values count :eof)))
 	   ((:non-blocking)
 	    (return (values count :non-blocking)))
-	   (:otherwise
+	   (otherwise
 	    (error 'stream-input-error :stream stream)))))))
 
 (defmethod read-sequence-until ((stream input-stream) end-element seq
@@ -151,7 +151,7 @@ from START to END until END-ELEMENT is read. Returns two values :
 	    (return (values count :eof)))
 	   ((:non-blocking)
 	    (return (values count :non-blocking)))
-	   (:otherwise
+	   (otherwise
 	    (error 'stream-input-error :stream stream)))))))
 
 (defclass output-stream (stream)
@@ -195,7 +195,7 @@ to OUTPUT-STREAM. Returns two values :
 	    (return (values count :eof)))
 	   ((:non-blocking)
 	    (return (values count :non-blocking)))
-	   (:otherwise
+	   (otherwise
 	    (error 'stream-output-error :stream stream)))))))
 
 (defvar *default-buffer-size*
@@ -335,7 +335,7 @@ by repeatedly calling STREAM-FLUSH-OUTPUT-BUFFER until empty. Returns
 	((nil) (stream-write-element-to-buffer stream element))
 	((:eof) (return-from write :eof))
 	((:non-blocking) (return-from write :non-blocking))
-	(:otherwise (error 'stream-output-error :stream stream)))))
+	(otherwise (error 'stream-output-error :stream stream)))))
 
 (defmethod flush ((stream buffered-output-stream))
   (loop
@@ -344,7 +344,7 @@ by repeatedly calling STREAM-FLUSH-OUTPUT-BUFFER until empty. Returns
 		(return)))
        ((:eof) (return :eof))
        ((:non-blocking (return :non-blocking)))
-       (:otherwise (error 'stream-output-error :stream stream)))))
+       (otherwise (error 'stream-output-error :stream stream)))))
 
 (defmethod close :before ((stream buffered-output-stream))
   (flush stream))
@@ -475,7 +475,7 @@ until END-ELEMENT is read. Returns two values :
 	       ((:non-blocking)
 		(return (values (sequence-output-stream-sequence out)
 				:non-blocking)))
-	       (:otherwise
+	       (otherwise
 		(error 'stream-input-error :stream stream)))))))))
 
 #+test
