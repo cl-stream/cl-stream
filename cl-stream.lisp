@@ -27,6 +27,17 @@
 (defgeneric stream-element-type (stream)
   (:documentation "Returns the type of elements of STREAM."))
 
+(defgeneric stream-blocking-p (stream)
+  (:documentation "Returns T if STREAM is in blocking mode,
+or NIL if in non-blocking mode."))
+
+(defgeneric (setf stream-blocking-p) (value stream)
+  (:documentation "Set to T to put STREAM in blocking mode,
+or NIL for non-blocking mode."))
+
+(defmethod stream-blocking-p ((stream stream))
+  t)
+
 (define-condition stream-error (error)
   ((stream :initarg :stream
 	   :reader stream-error-stream

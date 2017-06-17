@@ -45,6 +45,7 @@
    #:read
    #:read-sequence
    #:stream
+   #:stream-blocking-p
    #:stream-element-type
    #:stream-closed-error
    #:stream-error
