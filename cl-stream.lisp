@@ -258,7 +258,7 @@ Returns NIL if successful, or
   (check-if-open stream)
   (if (< (stream-input-index stream) (stream-input-length stream))
       (stream-read-element-from-buffer stream)
-      (ecase (stream-fill-input-buffer stream)
+      (case (stream-fill-input-buffer stream)
 	((nil) (stream-read-element-from-buffer stream))
 	((:eof) (values nil :eof))
 	((:non-blocking) (values nil :non-blocking))
