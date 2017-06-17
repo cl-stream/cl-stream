@@ -69,6 +69,7 @@
    #:stream-output-buffer-size
    #:stream-output-index
    #:stream-output-length
+   #:stream-read-element-from-buffer
    #:stream-write-element-to-buffer
    #:with-input-from-sequence
    #:with-input-from-string
