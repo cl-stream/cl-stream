@@ -262,6 +262,9 @@ Returns NIL if successful, or
 			       (values nil :non-blocking)))
 	    (:otherwise (error 'stream-input-error :stream stream)))))))
 
+(defmethod close :after ((stream buffered-input-stream))
+  (setf (stream-input-buffer stream) nil))
+
 (defclass buffered-output-stream (output-stream)
   ((output-buffer)
    (output-buffer-size :initarg :output-buffer-size
@@ -330,6 +333,12 @@ by repeatedly calling STREAM-FLUSH-OUTPUT-BUFFER until empty. Returns
        ((:eof) (return :eof))
        ((:non-blocking (return :non-blocking)))
        (:otherwise (error 'stream-output-error :stream stream)))))
+
+(defmethod close :before ((stream buffered-output-stream))
+  (flush stream))
+
+(defmethod close :after ((stream buffered-output-stream))
+  (setf (stream-output-buffer stream) nil))
 
 (defclass sequence-input-stream (buffered-input-stream)
   ()
