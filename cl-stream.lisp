@@ -479,3 +479,7 @@ until END-ELEMENT is read. Returns two values :
 #+test
 (with-input-from-string (in "hello world !")
   (read-until in #\Space))
+
+(defun shadowing-import-from ()
+  `(:shadowing-import-from :cl-stream
+			   ,@(package-shadowing-symbols :cl-stream)))

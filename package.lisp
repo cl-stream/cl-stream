@@ -44,6 +44,7 @@
    #:output-stream
    #:read
    #:read-sequence
+   #:shadowing-import-from
    #:stream
    #:stream-blocking-p
    #:stream-element-type
