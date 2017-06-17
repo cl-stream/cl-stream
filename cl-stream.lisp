@@ -67,14 +67,13 @@ causing them to raise STREAM-CLOSED-ERROR."))
 (defmethod close ((stream stream))
   (setf (stream-open-p stream) nil))
 
-(defmacro with ((var stream-class &rest args &key &allow-other-keys)
-		&body body)
-  "Instantiates a stream and ensures it gets closed returning from BODY."
-  (let ((stream (gensym "STREAM-")))
-    `(let ((,stream (make-instance ,stream-class ,@args)))
-       (unwind-protect (let ((,var ,stream))
+(defmacro with-stream ((var stream) &body body)
+  "Ensures STREAM gets closed returning from BODY with VAR bound to STREAM."
+  (let ((s (gensym "STREAM-")))
+    `(let ((,s ,stream))
+       (unwind-protect (let ((,var ,s))
 			 ,@body)
-	 (close ,stream)))))
+	 (close ,s)))))
 
 (defclass input-stream (stream)
   ()

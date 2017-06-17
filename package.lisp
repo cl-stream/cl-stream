@@ -52,5 +52,6 @@
    #:stream-error-stream
    #:with-input-from-sequence
    #:with-input-from-string
+   #:with-stream
    #:write
    #:write-sequence))
