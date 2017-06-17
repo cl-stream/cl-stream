@@ -38,9 +38,17 @@
    #:write
    #:write-sequence)
   (:export
+   #:buffered-input-stream
+   #:buffered-output-stream
    #:close
+   #:*default-buffer-size*
+   #:flush
+   #:input-buffer
    #:input-stream
    #:io-stream
+   #:make-stream-input-buffer
+   #:make-stream-output-buffer
+   #:output-buffer
    #:output-stream
    #:read
    #:read-sequence
@@ -51,6 +59,17 @@
    #:stream-closed-error
    #:stream-error
    #:stream-error-stream
+   #:stream-fill-input-buffer
+   #:stream-flush-output-buffer
+   #:stream-input-buffer
+   #:stream-input-buffer-size
+   #:stream-input-index
+   #:stream-input-length
+   #:stream-output-buffer
+   #:stream-output-buffer-size
+   #:stream-output-index
+   #:stream-output-length
+   #:stream-write-element-to-buffer
    #:with-input-from-sequence
    #:with-input-from-string
    #:with-stream
