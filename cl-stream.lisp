@@ -286,6 +286,9 @@ gets flushed."))
   (:documentation "Returns the stream output buffer, calling
 MAKE-STREAM-OUTPUT-BUFFER to create it if needed."))
 
+(defgeneric (setf stream-output-buffer) (value buffered-output-stream)
+  (:documentation "Sets the stream output buffer."))
+
 (defgeneric stream-flush-output-buffer (buffered-output-stream)
   (:documentation "Tries to flush once the stream output buffer. Returns
  NIL if successful, or
@@ -308,6 +311,9 @@ by repeatedly calling STREAM-FLUSH-OUTPUT-BUFFER until empty. Returns
       (slot-value stream 'output-buffer)
       (setf (slot-value stream 'output-buffer)
 	    (make-stream-output-buffer stream))))
+
+(defmethod (setf stream-output-buffer) (value (stream buffered-output-stream))
+  (setf (slot-value stream 'output-buffer) value))
 
 (defmethod write ((stream buffered-output-stream) element)
   (check-if-open stream)
