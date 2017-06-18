@@ -420,11 +420,15 @@ SEQUENCE-OUTPUT-STREAM."))
 (defmethod stream-output-buffer-size ((stream sequence-output-stream))
   (length (stream-output-buffer stream)))
 
+(defmethod flush ((stream sequence-output-stream))
+  nil)
+
 (defmethod stream-flush-output-buffer ((stream sequence-output-stream))
   (setf (slot-value stream 'output-buffer)
 	(let ((output-buffer (stream-output-buffer stream)))
 	  (adjust-array output-buffer
-			`(,(+ (length output-buffer) *default-buffer-size*))))))
+			`(,(+ (length output-buffer) *default-buffer-size*)))))
+  nil)
 
 (defmacro with-output-to-sequence ((var element-type) &body body)
   "Binds VAR to a new sequence output stream with element-type
