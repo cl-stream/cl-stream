@@ -460,6 +460,8 @@ until END-ELEMENT is read. Returns two values :
   :EOF if end of file was reached
   :NON-BLOCKING if read would block."))
 
+(defgeneric read-line (input-stream))
+
 (defmethod read-until ((stream input-stream) end-element)
   (block nil
     (let ((type (stream-element-type stream)))
@@ -481,6 +483,9 @@ until END-ELEMENT is read. Returns two values :
 				:non-blocking)))
 	       (otherwise
 		(error 'stream-input-error :stream stream)))))))))
+
+(defmethod read-line ((stream input-stream))
+  (read-until stream #\Newline))
 
 #+test
 (with-input-from-string (in "hello world !")

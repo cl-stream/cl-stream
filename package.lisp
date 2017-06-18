@@ -28,6 +28,7 @@
    #:open-stream-p
    #:output-stream
    #:read
+   #:read-line
    #:read-sequence
    #:stream
    #:stream-element-type
@@ -51,7 +52,10 @@
    #:output-buffer
    #:output-stream
    #:read
+   #:read-line
    #:read-sequence
+   #:read-sequence-until
+   #:read-until
    #:shadowing-import-from
    #:stream
    #:stream-blocking-p
