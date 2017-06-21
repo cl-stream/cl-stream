@@ -56,6 +56,9 @@
    #:read-sequence
    #:read-sequence-until
    #:read-until
+   #:sequence-output-stream
+   #:sequence-output-stream-reset
+   #:sequence-output-stream-sequence
    #:shadowing-import-from
    #:stream
    #:stream-blocking-p

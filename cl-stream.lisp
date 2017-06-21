@@ -401,8 +401,13 @@ aborted by a control transfer of some kind."
   (:documentation "Returns the sequence that was written to
 SEQUENCE-OUTPUT-STREAM."))
 
+(defgeneric sequence-output-stream-reset (sequence-output-stream))
+
 (defmethod sequence-output-stream-sequence ((stream sequence-output-stream))
   (subseq (stream-output-buffer stream) 0 (stream-output-length stream)))
+
+(defmethod sequence-output-stream-reset ((stream sequence-output-stream))
+  (setf (stream-output-length stream) 0))
 
 (defmethod initialize-instance ((stream sequence-output-stream)
 				&rest initargs
