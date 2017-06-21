@@ -20,8 +20,8 @@
 
 (defclass stream ()
   ((open-p :initform t
-	   :accessor stream-open-p
-	   :type boolean))
+           :accessor stream-open-p
+           :type boolean))
   (:documentation "Base class for all streams."))
 
 (defgeneric stream-element-type (stream)
@@ -40,8 +40,8 @@ or NIL for non-blocking mode."))
 
 (define-condition stream-error (error)
   ((stream :initarg :stream
-	   :reader stream-error-stream
-	   :type stream))
+           :reader stream-error-stream
+           :type stream))
     (:documentation "Superclass for all errors related to streams."))
 
 (define-condition stream-closed-error (stream-error)
@@ -72,8 +72,8 @@ causing them to raise STREAM-CLOSED-ERROR."))
   (let ((s (gensym "STREAM-")))
     `(let ((,s ,stream))
        (unwind-protect (let ((,var ,s))
-			 ,@body)
-	 (close ,s)))))
+                         ,@body)
+         (close ,s)))))
 
 (defclass input-stream (stream)
   ()
@@ -111,48 +111,48 @@ from START to END until END-ELEMENT is read. Returns two values :
   :NON-BLOCKING if read would block."))
 
 (defmethod read-sequence ((stream input-stream) seq &key
-						      (start 0)
-						      (end (length seq)))
+                                                      (start 0)
+                                                      (end (length seq)))
   (check-if-open stream)
   (let ((count 0))
     (loop
        (when (= start end)
-	 (return))
+         (return))
        (multiple-value-bind (element state) (read stream)
-	 (case state
-	   ((nil)
-	    (setf (aref seq start) element)
-	    (incf start)
-	    (incf count))
-	   ((:eof)
-	    (return (values count :eof)))
-	   ((:non-blocking)
-	    (return (values count :non-blocking)))
-	   (otherwise
-	    (error 'stream-input-error :stream stream)))))))
+         (case state
+           ((nil)
+            (setf (aref seq start) element)
+            (incf start)
+            (incf count))
+           ((:eof)
+            (return (values count :eof)))
+           ((:non-blocking)
+            (return (values count :non-blocking)))
+           (otherwise
+            (error 'stream-input-error :stream stream)))))))
 
 (defmethod read-sequence-until ((stream input-stream) end-element seq
-				&key (start 0) (end (length seq)))
+                                &key (start 0) (end (length seq)))
   (check-if-open stream)
   (assert (typep end-element (stream-element-type stream)))
   (let ((count 0))
     (loop
        (when (= start end)
-	 (return))
+         (return))
        (multiple-value-bind (element state) (read stream)
-	 (case state
-	   ((nil)
-	    (setf (aref seq start) element)
-	    (incf start)
-	    (incf count)
-	    (when (eq element end-element)
-	      (return (values count nil))))
-	   ((:eof)
-	    (return (values count :eof)))
-	   ((:non-blocking)
-	    (return (values count :non-blocking)))
-	   (otherwise
-	    (error 'stream-input-error :stream stream)))))))
+         (case state
+           ((nil)
+            (setf (aref seq start) element)
+            (incf start)
+            (incf count)
+            (when (eq element end-element)
+              (return (values count nil))))
+           ((:eof)
+            (return (values count :eof)))
+           ((:non-blocking)
+            (return (values count :non-blocking)))
+           (otherwise
+            (error 'stream-input-error :stream stream)))))))
 
 (defclass output-stream (stream)
   ()
@@ -179,24 +179,24 @@ to OUTPUT-STREAM. Returns two values :
   :NON-BLOCKING if write would block."))
 
 (defmethod write-sequence ((stream output-stream) seq &key
-							(start 0)
-							(end (length seq)))
+                                                        (start 0)
+                                                        (end (length seq)))
   (check-if-open stream)
   (let ((count 0))
     (loop
        (when (= start end)
-	 (return))
+         (return))
        (let ((state (write stream (aref seq start))))
-	 (case state
-	   ((nil)
-	    (incf start)
-	    (incf count))
-	   ((:eof)
-	    (return (values count :eof)))
-	   ((:non-blocking)
-	    (return (values count :non-blocking)))
-	   (otherwise
-	    (error 'stream-output-error :stream stream)))))))
+         (case state
+           ((nil)
+            (incf start)
+            (incf count))
+           ((:eof)
+            (return (values count :eof)))
+           ((:non-blocking)
+            (return (values count :non-blocking)))
+           (otherwise
+            (error 'stream-output-error :stream stream)))))))
 
 (defvar *default-buffer-size*
   1024)
@@ -207,14 +207,14 @@ to OUTPUT-STREAM. Returns two values :
 (defclass buffered-input-stream (input-stream)
   ((input-buffer)
    (input-buffer-size :initarg :input-buffer-size
-		      :initform *default-buffer-size*
-		      :reader stream-input-buffer-size)
+                      :initform *default-buffer-size*
+                      :reader stream-input-buffer-size)
    (input-index :initform 0
-		:accessor stream-input-index
-		:type fixnum+)
+                :accessor stream-input-index
+                :type fixnum+)
    (input-length :initform 0
-		 :accessor stream-input-length
-		 :type fixnum+)))
+                 :accessor stream-input-length
+                 :type fixnum+)))
 
 (defgeneric make-stream-input-buffer (buffered-input-stream)
   (:documentation "Returns a new input buffer for stream."))
@@ -234,13 +234,13 @@ Returns NIL if successful, or
 
 (defmethod make-stream-input-buffer ((stream buffered-input-stream))
   (make-array `(,(stream-input-buffer-size stream))
-	      :element-type (stream-element-type stream)))
+              :element-type (stream-element-type stream)))
 
 (defmethod stream-input-buffer ((stream buffered-input-stream))
   (if (slot-boundp stream 'input-buffer)
       (slot-value stream 'input-buffer)
       (setf (slot-value stream 'input-buffer)
-	    (make-stream-input-buffer stream))))
+            (make-stream-input-buffer stream))))
 
 (defmethod (setf stream-input-buffer) (value (stream buffered-input-stream))
   (setf (slot-value stream 'input-buffer) value))
@@ -249,7 +249,7 @@ Returns NIL if successful, or
 
 (defmethod stream-read-element-from-buffer ((stream buffered-input-stream))
   (let ((element (aref (stream-input-buffer stream)
-		       (stream-input-index stream))))
+                       (stream-input-index stream))))
     (assert (typep element (stream-element-type stream)))
     (incf (stream-input-index stream))
     (values element nil)))
@@ -259,10 +259,10 @@ Returns NIL if successful, or
   (if (< (stream-input-index stream) (stream-input-length stream))
       (stream-read-element-from-buffer stream)
       (case (stream-fill-input-buffer stream)
-	((nil) (stream-read-element-from-buffer stream))
-	((:eof) (values nil :eof))
-	((:non-blocking) (values nil :non-blocking))
-	(otherwise (error 'stream-input-error :stream stream)))))
+        ((nil) (stream-read-element-from-buffer stream))
+        ((:eof) (values nil :eof))
+        ((:non-blocking) (values nil :non-blocking))
+        (otherwise (error 'stream-input-error :stream stream)))))
 
 (defmethod close :after ((stream buffered-input-stream))
   (setf (stream-input-buffer stream) nil))
@@ -270,14 +270,14 @@ Returns NIL if successful, or
 (defclass buffered-output-stream (output-stream)
   ((output-buffer)
    (output-buffer-size :initarg :output-buffer-size
-		       :initform *default-buffer-size*
-		       :reader stream-output-buffer-size)
+                       :initform *default-buffer-size*
+                       :reader stream-output-buffer-size)
    (output-index :initform 0
-		 :accessor stream-output-index
-		 :type fixnum+)
+                 :accessor stream-output-index
+                 :type fixnum+)
    (output-length :initform 0
-		  :accessor stream-output-length
-		  :type fixnum+))
+                  :accessor stream-output-length
+                  :type fixnum+))
   (:documentation "An output stream that buffers its writes until it
 gets flushed."))
 
@@ -308,21 +308,21 @@ by repeatedly calling STREAM-FLUSH-OUTPUT-BUFFER until empty. Returns
 
 (defmethod make-stream-output-buffer ((stream buffered-output-stream))
   (make-array `(,(stream-output-buffer-size stream))
-	      :element-type (stream-element-type stream)))
+              :element-type (stream-element-type stream)))
 
 (defmethod stream-output-buffer ((stream buffered-output-stream))
   (if (slot-boundp stream 'output-buffer)
       (slot-value stream 'output-buffer)
       (setf (slot-value stream 'output-buffer)
-	    (make-stream-output-buffer stream))))
+            (make-stream-output-buffer stream))))
 
 (defmethod (setf stream-output-buffer) (value (stream buffered-output-stream))
   (setf (slot-value stream 'output-buffer) value))
 
 (defmethod stream-write-element-to-buffer ((stream buffered-output-stream)
-					   element)
+                                           element)
   (setf (aref (stream-output-buffer stream) (stream-output-length stream))
-	element)
+        element)
   (incf (stream-output-length stream))
   nil)
 
@@ -332,16 +332,16 @@ by repeatedly calling STREAM-FLUSH-OUTPUT-BUFFER until empty. Returns
   (if (< (stream-output-length stream) (stream-output-buffer-size stream))
       (stream-write-element-to-buffer stream element)
       (case (stream-flush-output-buffer stream)
-	((nil) (stream-write-element-to-buffer stream element))
-	((:eof) (return-from write :eof))
-	((:non-blocking) (return-from write :non-blocking))
-	(otherwise (error 'stream-output-error :stream stream)))))
+        ((nil) (stream-write-element-to-buffer stream element))
+        ((:eof) (return-from write :eof))
+        ((:non-blocking) (return-from write :non-blocking))
+        (otherwise (error 'stream-output-error :stream stream)))))
 
 (defmethod flush ((stream buffered-output-stream))
   (loop
      (case (stream-flush-output-buffer stream)
        ((nil) (when (= 0 (stream-output-length stream))
-		(return)))
+                (return)))
        ((:eof) (return :eof))
        ((:non-blocking (return :non-blocking)))
        (otherwise (error 'stream-output-error :stream stream)))))
@@ -357,10 +357,10 @@ by repeatedly calling STREAM-FLUSH-OUTPUT-BUFFER until empty. Returns
   (:documentation "A buffered input stream that reads from a sequence."))
 
 (defmethod initialize-instance ((stream sequence-input-stream)
-				&rest initargs
-				&key sequence &allow-other-keys)
+                                &rest initargs
+                                &key sequence &allow-other-keys)
   (declare (ignore initargs)
-	   (type sequence sequence))
+           (type sequence sequence))
   (call-next-method)
   (setf (slot-value stream 'input-buffer) sequence))
 
@@ -383,8 +383,8 @@ aborted by a control transfer of some kind."
   (let ((stream (gensym "STREAM-")))
     `(let ((,stream (make-instance 'sequence-input-stream :sequence ,sequence)))
        (unwind-protect (let ((,var ,stream))
-			 ,@body)
-	 (close ,stream)))))
+                         ,@body)
+         (close ,stream)))))
 
 (defmacro with-input-from-string ((var string) &body body)
   "Binds VAR to a new sequence input stream reading from STRING.
@@ -410,14 +410,14 @@ SEQUENCE-OUTPUT-STREAM."))
   (setf (stream-output-length stream) 0))
 
 (defmethod initialize-instance ((stream sequence-output-stream)
-				&rest initargs
-				&key element-type &allow-other-keys)
+                                &rest initargs
+                                &key element-type &allow-other-keys)
   (declare (ignore initargs))
   (call-next-method)
   (setf (slot-value stream 'output-buffer)
-	(make-array `(,*default-buffer-size*)
-		    :element-type element-type
-		    :adjustable t)))
+        (make-array `(,*default-buffer-size*)
+                    :element-type element-type
+                    :adjustable t)))
 
 (defmethod stream-element-type ((stream sequence-output-stream))
   (array-element-type (stream-output-buffer stream)))
@@ -430,9 +430,9 @@ SEQUENCE-OUTPUT-STREAM."))
 
 (defmethod stream-flush-output-buffer ((stream sequence-output-stream))
   (setf (slot-value stream 'output-buffer)
-	(let ((output-buffer (stream-output-buffer stream)))
-	  (adjust-array output-buffer
-			`(,(+ (length output-buffer) *default-buffer-size*)))))
+        (let ((output-buffer (stream-output-buffer stream)))
+          (adjust-array output-buffer
+                        `(,(+ (length output-buffer) *default-buffer-size*)))))
   nil)
 
 (defmacro with-output-to-sequence ((var element-type) &body body)
@@ -442,11 +442,11 @@ BODY returns normally. The stream is closed after BODY returns
 normally or before it is aborted by a control transfer of some kind."
   (let ((stream (gensym "STREAM-")))
     `(let ((,stream (make-instance 'sequence-output-stream
-				   :element-type ,element-type)))
+                                   :element-type ,element-type)))
        (unwind-protect (let ((,var ,stream))
-			 ,@body
-			 (sequence-output-stream-sequence ,stream))
-	 (close ,stream)))))
+                         ,@body
+                         (sequence-output-stream-sequence ,stream))
+         (close ,stream)))))
 
 (defclass string-output-stream (sequence-output-stream)
   ()
@@ -487,22 +487,22 @@ until END-ELEMENT is read. Returns two values :
     (let ((type (stream-element-type stream)))
       (assert (typep end-element type))
       (with-output-to-sequence (out type)
-	(loop
-	   (multiple-value-bind (element state) (read stream)
-	     (case state
-	       ((nil)
-		(write out element)
-		(when (eq element end-element)
-		  (return (values (sequence-output-stream-sequence out)
-				  nil))))
-	       ((:eof)
-		(return (values (sequence-output-stream-sequence out)
-				:eof)))
-	       ((:non-blocking)
-		(return (values (sequence-output-stream-sequence out)
-				:non-blocking)))
-	       (otherwise
-		(error 'stream-input-error :stream stream)))))))))
+        (loop
+           (multiple-value-bind (element state) (read stream)
+             (case state
+               ((nil)
+                (write out element)
+                (when (eq element end-element)
+                  (return (values (sequence-output-stream-sequence out)
+                                  nil))))
+               ((:eof)
+                (return (values (sequence-output-stream-sequence out)
+                                :eof)))
+               ((:non-blocking)
+                (return (values (sequence-output-stream-sequence out)
+                                :non-blocking)))
+               (otherwise
+                (error 'stream-input-error :stream stream)))))))))
 
 (defmethod read-line ((stream input-stream))
   (read-until stream #\Newline))
@@ -513,4 +513,4 @@ until END-ELEMENT is read. Returns two values :
 
 (defun shadowing-import-from ()
   `(:shadowing-import-from :cl-stream
-			   ,@(package-shadowing-symbols :cl-stream)))
+                           ,@(package-shadowing-symbols :cl-stream)))
