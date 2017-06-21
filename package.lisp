@@ -34,6 +34,7 @@
    #:stream-element-type
    #:stream-error
    #:stream-error-stream
+   #:string-output-stream
    #:with-input-from-string
    #:with-output-to-string
    #:write
@@ -78,8 +79,12 @@
    #:stream-output-length
    #:stream-read-element-from-buffer
    #:stream-write-element-to-buffer
+   #:string-output-stream
+   #:string-output-stream-string
    #:with-input-from-sequence
    #:with-input-from-string
+   #:with-output-to-sequence
+   #:with-output-to-string
    #:with-stream
    #:write
    #:write-sequence))

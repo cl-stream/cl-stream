@@ -448,6 +448,21 @@ normally or before it is aborted by a control transfer of some kind."
 			 (sequence-output-stream-sequence ,stream))
 	 (close ,stream)))))
 
+(defclass string-output-stream (sequence-output-stream)
+  ()
+  (:default-initargs :element-type 'character))
+
+(defgeneric string-output-stream-string (string-output-stream))
+
+(defun string-output-stream (&key (element-type 'character)
+                               (output-buffer-size *default-buffer-size*))
+  (make-instance 'string-output-stream
+                 :element-type element-type
+                 :output-buffer-size output-buffer-size))
+
+(defmethod string-output-stream-string ((stream string-output-stream))
+  (sequence-output-stream-sequence stream))
+
 (defmacro with-output-to-string ((var) &body body)
   "Binds VAR to a new sequence output stream with element-type
 character. Returns the sequence output stream string if
