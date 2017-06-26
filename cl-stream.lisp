@@ -343,8 +343,8 @@ by repeatedly calling STREAM-FLUSH-OUTPUT-BUFFER until empty. Returns
       (stream-write-element-to-buffer stream element)
       (case (stream-flush-output-buffer stream)
         ((nil) (stream-write-element-to-buffer stream element))
-        ((:eof) (return-from write :eof))
-        ((:non-blocking) (return-from write :non-blocking))
+        ((:eof) :eof)
+        ((:non-blocking) :non-blocking)
         (otherwise (error 'stream-output-error :stream stream)))))
 
 (defmethod flush ((stream buffered-output-stream))
