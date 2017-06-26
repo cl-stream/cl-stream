@@ -72,10 +72,12 @@
    #:stream-flush-output-buffer
    #:stream-input-buffer
    #:stream-input-buffer-size
+   #:stream-input-error
    #:stream-input-index
    #:stream-input-length
    #:stream-output-buffer
    #:stream-output-buffer-size
+   #:stream-output-error
    #:stream-output-index
    #:stream-output-length
    #:stream-read-element-from-buffer
