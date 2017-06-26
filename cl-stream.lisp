@@ -198,6 +198,9 @@ to OUTPUT-STREAM. Returns two values :
            (otherwise
             (error 'stream-output-error :stream stream)))))))
 
+(defclass io-stream (input-stream output-stream)
+  ())
+
 (defvar *default-buffer-size*
   1024)
 
