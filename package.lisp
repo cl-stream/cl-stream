@@ -52,6 +52,9 @@
    #:make-stream-output-buffer
    #:output-buffer
    #:output-stream
+   #:queue
+   #:queue-first
+   #:queue-length
    #:read
    #:read-line
    #:read-sequence
