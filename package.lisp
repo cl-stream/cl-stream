@@ -65,6 +65,7 @@
    #:stream-blocking-p
    #:stream-element-type
    #:stream-closed-error
+   #:stream-end-error
    #:stream-error
    #:stream-error-stream
    #:stream-fill-input-buffer

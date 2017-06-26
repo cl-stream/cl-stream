@@ -52,6 +52,13 @@ or NIL for non-blocking mode."))
   (:documentation "An error that is signalled when trying to read from
 or write to a closed stream."))
 
+(define-condition stream-end-error (stream-error)
+  ()
+  (:report (lambda (condition stream)
+             (format stream "End of stream ~S."
+                     (stream-error-stream condition))))
+  (:documentation "An error that is signalled when stream end was reached."))
+
 (defgeneric check-if-open (stream))
 
 (defmethod check-if-open ((stream stream))
