@@ -86,6 +86,7 @@
    #:stream-output-index
    #:stream-output-length
    #:stream-read-element-from-buffer
+   #:stream-underlying-stream
    #:stream-write-element-to-buffer
    #:string-output-stream
    #:string-output-stream-string
