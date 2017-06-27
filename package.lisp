@@ -52,6 +52,7 @@
    #:io-stream
    #:make-stream-input-buffer
    #:make-stream-output-buffer
+   #:multi-buffered-output-stream
    #:output-buffer
    #:output-stream
    #:queue
