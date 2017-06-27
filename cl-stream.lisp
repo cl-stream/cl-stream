@@ -229,6 +229,8 @@ to OUTPUT-STREAM. Returns two values :
 (defgeneric make-stream-input-buffer (buffered-input-stream)
   (:documentation "Returns a new input buffer for stream."))
 
+(defgeneric discard-stream-input-buffer (buffered-input-stream))
+
 (defgeneric stream-input-buffer (buffered-input-stream)
   (:documentation "Returns the stream input buffer, calling
 MAKE-STREAM-INPUT-BUFFER to create it if needed."))
@@ -245,6 +247,9 @@ Returns NIL if successful, or
 (defmethod make-stream-input-buffer ((stream buffered-input-stream))
   (make-array `(,(stream-input-buffer-size stream))
               :element-type (stream-element-type stream)))
+
+(defmethod discard-stream-input-buffer ((stream buffered-input-stream))
+  (setf (stream-input-buffer stream) nil))
 
 (defmethod stream-input-buffer ((stream buffered-input-stream))
   (if (slot-boundp stream 'input-buffer)
@@ -275,7 +280,7 @@ Returns NIL if successful, or
         (otherwise (error 'stream-input-error :stream stream)))))
 
 (defmethod close :after ((stream buffered-input-stream))
-  (setf (stream-input-buffer stream) nil))
+  (discard-stream-input-buffer stream))
 
 (defclass buffered-output-stream (output-stream)
   ((output-buffer)
@@ -293,6 +298,8 @@ gets flushed."))
 
 (defgeneric make-stream-output-buffer (buffered-output-stream)
   (:documentation "Returns a new output buffer for stream."))
+
+(defgeneric discard-stream-output-buffer (buffered-output-stream))
 
 (defgeneric stream-output-buffer (buffered-output-stream)
   (:documentation "Returns the stream output buffer, calling
@@ -319,6 +326,9 @@ by repeatedly calling STREAM-FLUSH-OUTPUT-BUFFER until empty. Returns
 (defmethod make-stream-output-buffer ((stream buffered-output-stream))
   (make-array `(,(stream-output-buffer-size stream))
               :element-type (stream-element-type stream)))
+
+(defmethod discard-stream-output-buffer ((stream buffered-output-stream))
+  (setf (stream-output-buffer stream) nil))
 
 (defmethod stream-output-buffer ((stream buffered-output-stream))
   (if (slot-boundp stream 'output-buffer)
@@ -360,7 +370,7 @@ by repeatedly calling STREAM-FLUSH-OUTPUT-BUFFER until empty. Returns
   (flush stream))
 
 (defmethod close :after ((stream buffered-output-stream))
-  (setf (stream-output-buffer stream) nil))
+  (discard-stream-output-buffer stream))
 
 (defclass sequence-input-stream (buffered-input-stream)
   ()

@@ -44,6 +44,8 @@
    #:buffered-output-stream
    #:close
    #:*default-buffer-size*
+   #:discard-stream-input-buffer
+   #:discard-stream-output-buffer
    #:flush
    #:input-buffer
    #:input-stream
