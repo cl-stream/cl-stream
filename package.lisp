@@ -46,7 +46,6 @@
    #:buffered-input-stream
    #:buffered-output-stream
    #:close
-   #:*default-buffer-size*
    #:discard-stream-input-buffer
    #:discard-stream-output-buffer
    #:flush
@@ -72,6 +71,7 @@
    #:shadowing-import-from
    #:stream
    #:stream-blocking-p
+   #:*stream-default-buffer-size*
    #:stream-element-type
    #:stream-closed-error
    #:stream-end-error
