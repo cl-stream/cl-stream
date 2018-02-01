@@ -1,7 +1,7 @@
 ;;
-;;  cl-stream  -  Stream class for Common Lisp
+;;  cl-stream  -  Stream classes for Common Lisp
 ;;
-;;  Copyright 2017 Thomas de Grivel <thoxdg@gmail.com>
+;;  Copyright 2017,2018 Thomas de Grivel <thoxdg@gmail.com>
 ;;
 ;;  Permission to use, copy, modify, and distribute this software for any
 ;;  purpose with or without fee is hereby granted, provided that the above
@@ -31,9 +31,12 @@
    #:read-line
    #:read-sequence
    #:stream
+   #:stream-close
    #:stream-element-type
    #:stream-error
    #:stream-error-stream
+   #:stream-read
+   #:stream-write
    #:string-output-stream
    #:with-input-from-string
    #:with-output-to-string

@@ -1,7 +1,7 @@
 ;;
 ;;  cl-stream  -  Stream classes for Common Lisp
 ;;
-;;  Copyright 2017 Thomas de Grivel <thoxdg@gmail.com>
+;;  Copyright 2017,2018 Thomas de Grivel <thoxdg@gmail.com>
 ;;
 ;;  Permission to use, copy, modify, and distribute this software for any
 ;;  purpose with or without fee is hereby granted, provided that the above
@@ -27,7 +27,19 @@
   :name "cl-stream"
   :author "Thomas de Grivel <thoxdg@gmail.com>"
   :version "0.1"
-  :description "Stream class for Common Lisp"
+  :description "Stream classes for Common Lisp"
   :components
-  ((:file "package")
-   (:file "cl-stream" :depends-on ("package"))))
+  ((:file "buffered-input-stream" :depends-on ("input-stream"))
+   (:file "buffered-output-stream" :depends-on ("output-stream"))
+   (:file "input-stream" :depends-on ("stream"))
+   (:file "input-stream-1" :depends-on ("sequence-output-stream"))
+   (:file "io-stream" :depends-on ("input-stream" "output-stream"))
+   (:file "misc" :depends-on ("package"))
+   (:file "multi-buffered-output-stream" :depends-on ("buffered-output-stream"))
+   (:file "output-stream" :depends-on ("stream"))
+   (:file "package")
+   (:file "queue" :depends-on ("io-stream"))
+   (:file "sequence-input-stream" :depends-on ("buffered-input-stream"))
+   (:file "sequence-output-stream" :depends-on ("buffered-output-stream"))
+   (:file "stream" :depends-on ("package" "misc"))
+   (:file "string-output-stream" :depends-on ("sequence-output-stream"))))
