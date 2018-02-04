@@ -52,13 +52,6 @@ MAKE-STREAM-OUTPUT-BUFFER to create it if needed."))
 
 (defgeneric stream-write-element-to-buffer (stream element))
 
-(defgeneric flush (buffered-output-stream)
-  (:documentation "Flushes the output buffer of BUFFERED-OUTPUT-STREAM
-by repeatedly calling STREAM-FLUSH-OUTPUT-BUFFER until empty. Returns
- NIL if output buffer was empty or emptied, or
- :EOF if end of file was reached, or
- :NON-BLOCKING if write would block."))
-
 (defmethod make-stream-output-buffer ((stream buffered-output-stream))
   (make-array `(,(stream-output-buffer-size stream))
               :element-type (stream-element-type stream)))
@@ -94,6 +87,11 @@ by repeatedly calling STREAM-FLUSH-OUTPUT-BUFFER until empty. Returns
         (otherwise (error 'stream-output-error :stream stream)))))
 
 (defmethod stream-flush ((stream buffered-output-stream))
+  "Flushes the output buffer of BUFFERED-OUTPUT-STREAM
+by repeatedly calling STREAM-FLUSH-OUTPUT-BUFFER until empty. Returns
+ NIL if output buffer was empty or emptied, or
+ :EOF if end of file was reached, or
+ :NON-BLOCKING if write would block."
   (loop
      (case (stream-flush-output-buffer stream)
        ((nil) (when (= 0 (stream-output-length stream))

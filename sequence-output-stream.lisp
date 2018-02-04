@@ -50,7 +50,7 @@ SEQUENCE-OUTPUT-STREAM."))
 (defmethod stream-output-buffer-size ((stream sequence-output-stream))
   (length (stream-output-buffer stream)))
 
-(defmethod flush ((stream sequence-output-stream))
+(defmethod stream-flush ((stream sequence-output-stream))
   nil)
 
 (defmethod stream-flush-output-buffer ((stream sequence-output-stream))

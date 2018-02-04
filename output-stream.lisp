@@ -27,6 +27,12 @@
   (:documentation "An error which is signalled when an output error
 occurs on a stream."))
 
+(defgeneric stream-flush (stream)
+  (:documentation "Ensure that any output buffer is fully transmitted.
+Returns a state indicator which is NIL if flush succeeded,
+:EOF if end of file was reached, or
+:NON-BLOCKING if flush would block."))
+
 (defgeneric stream-write (output-stream element)
   (:documentation "Tries to write one element to STREAM.
 Returns a state indicator which is NIL if write succeeded,
@@ -41,6 +47,9 @@ to OUTPUT-STREAM. Returns two values :
   NIL if WRITE-SEQUENCE succeeded
   :EOF if end of file was reached
   :NON-BLOCKING if write would block."))
+
+(defmethod stream-flush ((stream output-stream))
+  nil)
 
 (defmethod stream-write-sequence ((stream output-stream) seq
                                   &key (start 0) (end (length seq)))

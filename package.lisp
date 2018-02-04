@@ -78,6 +78,7 @@
    #:stream-error
    #:stream-error-stream
    #:stream-fill-input-buffer
+   #:stream-flush
    #:stream-flush-output-buffer
    #:stream-input-buffer
    #:stream-input-buffer-size
