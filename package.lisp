@@ -85,14 +85,22 @@
    #:stream-input-error
    #:stream-input-index
    #:stream-input-length
+   #:stream-open-p
    #:stream-output-buffer
    #:stream-output-buffer-size
    #:stream-output-error
    #:stream-output-index
    #:stream-output-length
+   #:stream-read
    #:stream-read-element-from-buffer
+   #:stream-read-line
+   #:stream-read-sequence
+   #:stream-read-sequence-until
+   #:stream-read-until
    #:stream-underlying-stream
+   #:stream-write
    #:stream-write-element-to-buffer
+   #:stream-write-sequence
    #:string-output-stream
    #:string-output-stream-string
    #:with-input-from-sequence
