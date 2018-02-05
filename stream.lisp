@@ -24,8 +24,7 @@
            :type boolean))
   (:documentation "Base class for all streams."))
 
-(defgeneric stream-element-type (stream)
-  (:documentation "Returns the type of elements of STREAM."))
+(defgeneric check-if-open (stream))
 
 (defgeneric stream-blocking-p (stream)
   (:documentation "Returns T if STREAM is in blocking mode,
@@ -35,8 +34,11 @@ or NIL if in non-blocking mode."))
   (:documentation "Set to T to put STREAM in blocking mode,
 or NIL for non-blocking mode."))
 
-(defmethod stream-blocking-p ((stream stream))
-  t)
+(defgeneric stream-close (stream)
+  (:documentation "Prevent all further operations on STREAM."))
+
+(defgeneric stream-element-type (stream)
+  (:documentation "Returns the type of elements of STREAM."))
 
 (define-condition stream-error (error)
   ((stream :initarg :stream
@@ -59,7 +61,8 @@ or write to a closed stream."))
                      (stream-error-stream condition))))
   (:documentation "An error that is signalled when stream end was reached."))
 
-(defgeneric check-if-open (stream))
+(defvar *stream-default-buffer-size*
+  4096)
 
 (defmethod check-if-open ((stream stream))
   "Checks if STREAM is open and signals an error otherwise."
@@ -67,9 +70,8 @@ or write to a closed stream."))
     (error 'stream-closed-error
            :stream stream)))
 
-(defgeneric stream-close (stream)
-  (:documentation "Prevents further read and write operations on STREAM
-causing them to raise STREAM-CLOSED-ERROR."))
+(defmethod stream-blocking-p ((stream stream))
+  t)
 
 (defmethod stream-close ((stream stream))
   (setf (stream-open-p stream) nil))
@@ -81,9 +83,3 @@ causing them to raise STREAM-CLOSED-ERROR."))
        (unwind-protect (let ((,var ,s))
                          ,@body)
          (stream-close ,s)))))
-
-(defvar *stream-default-buffer-size*
-  4096)
-
-(deftype fixnum+ (&optional (start 0))
-  `(integer ,start ,most-positive-fixnum))
