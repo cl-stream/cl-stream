@@ -41,5 +41,6 @@
    (:file "queue" :depends-on ("io-stream"))
    (:file "sequence-input-stream" :depends-on ("buffered-input-stream"))
    (:file "sequence-output-stream" :depends-on ("buffered-output-stream"))
+   (:file "stdio" :depends-on ("input-stream" "output-stream"))
    (:file "stream" :depends-on ("package" "misc"))
    (:file "string-output-stream" :depends-on ("sequence-output-stream"))))

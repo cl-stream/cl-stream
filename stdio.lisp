@@ -1,0 +1,72 @@
+;;
+;;  cl-stream  -  Stream classes for Common Lisp
+;;
+;;  Copyright 2017,2018 Thomas de Grivel <thoxdg@gmail.com>
+;;
+;;  Permission to use, copy, modify, and distribute this software for any
+;;  purpose with or without fee is hereby granted, provided that the above
+;;  copyright notice and this permission notice appear in all copies.
+;;
+;;  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+;;  WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+;;  MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+;;  ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+;;  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+;;  ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+;;  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+;;
+
+(in-package :cl-stream)
+
+(defun close (stream)
+  (stream-close stream))
+
+(defun flush (&optional (stream (stdout)))
+  (stream-flush stream))
+
+(defun read (&optional (stream (stdin)))
+  (stream-read stream))
+
+(defun read-sequence (seq &key (stream (stdin)) (start 0)
+                            (end (length seq)))
+  (stream-read-sequence stream seq :start start :end end))
+
+(defun read-sequence-until (end-element seq &key (stream (stdin))
+                                              (start 0)
+                                              (end (length seq)))
+  (stream-read-sequence-until stream end-element seq :start start
+                              :end end))
+
+(defun read-until (end-element &optional (stream (stdin)))
+  (stream-read-until stream end-element))
+
+(defun read-line (&optional (stream (stdin)))
+  (stream-read-line stream))
+
+(defvar *stderr*)
+
+(defun stderr ()
+  (error "Please use one of the -STDIO packages for backend."))
+
+(declaim (ftype (function () output-stream) stderr))
+
+(defvar *stdin*)
+
+(defun stdin ()
+  (error "Please use one of the -STDIO packages for backend."))
+
+(declaim (ftype (function () input-stream) stdin))
+
+(defvar *stdout*)
+
+(defun stdout ()
+  (error "Please use one of the -STDIO packages for backend."))
+
+(declaim (ftype (function () output-stream) stdout))
+
+(defun write (element &optional (stream (stdout)))
+  (stream-write stream element))
+
+(defun write-sequence (seq &key (stream (stdout)) (start 0)
+                             (end (length seq)))
+  (stream-write-sequence stream seq :start start :end end))

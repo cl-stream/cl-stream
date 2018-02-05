@@ -69,6 +69,12 @@
    #:sequence-output-stream-reset
    #:sequence-output-stream-sequence
    #:shadowing-import-from
+   #:*stdin*
+   #:*stdout*
+   #:*stderr*
+   #:stdin
+   #:stdout
+   #:stderr
    #:stream
    #:stream-blocking-p
    #:*stream-default-buffer-size*
