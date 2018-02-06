@@ -24,10 +24,22 @@
 (defun flush (&optional (stream (stdout)))
   (stream-flush stream))
 
-(defun read (&optional (stream (stdin)))
-  (stream-read stream))
+(defun read (&optional (stream (stdin))
+               (eof-error-p t)
+               (eof-value nil)
+               (recursive-p nil))
+  (declare (ignore recursive-p))
+  (multiple-value-bind (element state) (stream-read stream)
+    (ecase state
+      ((nil) (values element state))
+      ((:eof) (if eof-error-p
+                  (error 'stream-end-error)
+                  (values eof-value state)))
+      ((:non-blocking) (values element state))
+      (t (error 'stream-error :stream stream)))))
 
-(defun read-sequence (seq &key (stream (stdin)) (start 0)
+(defun read-sequence (seq &key (stream (stdin))
+                            (start 0)
                             (end (length seq)))
   (stream-read-sequence stream seq :start start :end end))
 
