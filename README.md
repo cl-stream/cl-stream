@@ -1,5 +1,27 @@
 # cl-stream
 
+Common Lisp ticket to evented I/O on any kind of data.
+
+cl-stream streams support any kind of data.
+READ and WRITE both operate on exactly one stream element of type
+(STREAM-ELEMENT-TYPE stream). There is no READ-BYTE or READ-CHAR type
+specific read methods. Actual operations are implemented by specializing
+STREAM-READ and STREAM-WRITE.
+
+cl-stream streams support reading and writing to sequences of elements
+with READ-SEQUENCE and WRITE-SEQUENCE. Actual operations are implemented
+by specializing STREAM-READ-SEQUENCE and STREAM-WRITE-SEQUENCE.
+
+cl-stream streams support non-blocking I/O through the setf-able place
+(STREAM-BLOCKING-P stream). Actual operations are implemented by
+specializing (SETF STREAM-BLOCKING-P).
+
+cl-stream streams provide a new stream API which can be used on all
+common lisp streams too (see cl-stream.lisp).
+
+cl-stream streams can be used as gray-streams by using the steam-gray
+system.
+
 ## Abstract stream classes
 
 ### Class: stream
