@@ -24,3 +24,8 @@
 (defun shadowing-import-from ()
   `(:shadowing-import-from :cl-stream
                            ,@(package-shadowing-symbols :cl-stream)))
+
+(unless (boundp '+eof+)
+  (defconstant +eof+
+    (gensym "EOF-")
+    "Gensym to represent end of stream."))

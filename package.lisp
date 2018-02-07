@@ -46,6 +46,7 @@
    #:write
    #:write-sequence)
   (:export
+   #:+eof+
    #:buffered-input-stream
    #:buffered-output-stream
    #:close
