@@ -36,7 +36,10 @@
    #:stream-error
    #:stream-error-stream
    #:stream-read
+   #:stream-read-line
+   #:stream-read-sequence
    #:stream-write
+   #:stream-write-sequence
    #:string-output-stream
    #:with-input-from-string
    #:with-output-to-string
