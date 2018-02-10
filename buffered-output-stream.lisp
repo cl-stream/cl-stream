@@ -35,7 +35,18 @@ gets flushed."))
 (defgeneric make-stream-output-buffer (buffered-output-stream)
   (:documentation "Returns a new output buffer for stream."))
 
-(defgeneric discard-stream-output-buffer (buffered-output-stream))
+(defgeneric stream-clear-output (buffered-output-stream)
+  (:documentation "Removes the contents of the output buffer."))
+
+(defgeneric stream-finish-output (buffered-output-stream)
+  (:documentation "Ensures that the contents of the output buffer are
+transmitted before returning."))
+
+(defgeneric stream-flush-output (buffered-output-stream)
+  (:documentation "Tries to flush once the stream output buffer. Returns
+ NIL if successful, or
+ :EOF if end of file was reached, or
+ :NON-BLOCKING if operation would block."))
 
 (defgeneric stream-output-buffer (buffered-output-stream)
   (:documentation "Returns the stream output buffer, calling
@@ -44,20 +55,37 @@ MAKE-STREAM-OUTPUT-BUFFER to create it if needed."))
 (defgeneric (setf stream-output-buffer) (value buffered-output-stream)
   (:documentation "Sets the stream output buffer."))
 
-(defgeneric stream-flush-output-buffer (buffered-output-stream)
-  (:documentation "Tries to flush once the stream output buffer. Returns
- NIL if successful, or
- :EOF if end of file was reached, or
- :NON-BLOCKING if operation would block."))
-
 (defgeneric stream-write-element-to-buffer (stream element))
 
 (defmethod make-stream-output-buffer ((stream buffered-output-stream))
   (make-array `(,(stream-output-buffer-size stream))
               :element-type (stream-element-type stream)))
 
-(defmethod discard-stream-output-buffer ((stream buffered-output-stream))
+(defmethod stream-clear-output ((stream buffered-output-stream))
   (setf (stream-output-buffer stream) nil))
+
+(defmethod stream-close :before ((stream buffered-output-stream))
+  (flush stream))
+
+(defmethod stream-close :after ((stream buffered-output-stream))
+  (discard-stream-output-buffer stream))
+
+(defmethod stream-finish-output ((stream buffered-output-stream))
+  "Flushes the output buffer of BUFFERED-OUTPUT-STREAM
+by repeatedly calling STREAM-FLUSH-OUTPUT until empty. Returns
+ NIL if output buffer was empty or emptied, or
+ :EOF if end of file was reached, or
+ :NON-BLOCKING if write would block."
+  (loop
+     (case (stream-flush-output stream)
+       ((nil) (when (= 0 (stream-output-length stream))
+                (return)))
+       ((:eof) (return :eof))
+       ((:non-blocking (return :non-blocking)))
+       (otherwise (error 'stream-output-error :stream stream)))))
+
+(defmethod stream-flush-output ((stream buffered-output-stream))
+  (error "No method for STREAM-FLUSH-OUTPUT ~S." stream))
 
 (defmethod stream-output-buffer ((stream buffered-output-stream))
   (if (slot-boundp stream 'output-buffer)
@@ -85,23 +113,3 @@ MAKE-STREAM-OUTPUT-BUFFER to create it if needed."))
         ((:eof) :eof)
         ((:non-blocking) :non-blocking)
         (otherwise (error 'stream-output-error :stream stream)))))
-
-(defmethod stream-flush ((stream buffered-output-stream))
-  "Flushes the output buffer of BUFFERED-OUTPUT-STREAM
-by repeatedly calling STREAM-FLUSH-OUTPUT-BUFFER until empty. Returns
- NIL if output buffer was empty or emptied, or
- :EOF if end of file was reached, or
- :NON-BLOCKING if write would block."
-  (loop
-     (case (stream-flush-output-buffer stream)
-       ((nil) (when (= 0 (stream-output-length stream))
-                (return)))
-       ((:eof) (return :eof))
-       ((:non-blocking (return :non-blocking)))
-       (otherwise (error 'stream-output-error :stream stream)))))
-
-(defmethod stream-close :before ((stream buffered-output-stream))
-  (flush stream))
-
-(defmethod stream-close :after ((stream buffered-output-stream))
-  (discard-stream-output-buffer stream))
