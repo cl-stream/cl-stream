@@ -55,24 +55,30 @@
 (defun read-line (&optional (stream (stdin)))
   (stream-read-line stream))
 
-(defvar *stderr*)
+(defvar *stderr*
+  *error-output*)
 
 (defun stderr ()
-  (error "Please use one of the -STDIO packages for backend."))
+  (or *stderr*
+      (error "Please use one of the -STDIO packages for backend.")))
 
 (declaim (ftype (function () output-stream) stderr))
 
-(defvar *stdin*)
+(defvar *stdin*
+  *standard-input*)
 
-(defun stdin ()
-  (error "Please use one of the -STDIO packages for backend."))
+(defun cl-stdin ()
+  (or *stdin*
+      (error "Please use one of the -STDIO packages for backend.")))
 
 (declaim (ftype (function () input-stream) stdin))
 
-(defvar *stdout*)
+(defvar *stdout*
+  *standard-output*)
 
 (defun stdout ()
-  (error "Please use one of the -STDIO packages for backend."))
+  (or *stdout*
+      (error "Please use one of the -STDIO packages for backend.")))
 
 (declaim (ftype (function () output-stream) stdout))
 
