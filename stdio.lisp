@@ -79,6 +79,11 @@
       (error "Please use one of the -STDIO packages for backend.")))
 
 (defun write (element &optional (stream (stdout)))
+  "Tries to write one element to STREAM.
+Returns a state indicator which is
+ NIL if write succeeded,
+ :EOF if end of file was reached, or
+ :NON-BLOCKING if write would block."
   (stream-write stream element))
 
 (defun write-sequence (seq &key (stream (stdout)) (start 0)
