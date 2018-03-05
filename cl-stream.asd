@@ -31,8 +31,11 @@
   :description "Stream classes for Common Lisp"
   :components
   ((:file "buffered-input-stream" :depends-on ("input-stream"))
+   (:file "buffered-io-stream" :depends-on ("buffered-input-stream"
+                                            "buffered-output-stream"
+                                            "io-stream"))
    (:file "buffered-output-stream" :depends-on ("output-stream"))
-   (:file "cl-stream" :depends-on ("buffered-output-stream" "io-stream"))
+   (:file "cl-stream" :depends-on ("buffered-io-stream"))
    (:file "input-stream" :depends-on ("stream"))
    (:file "input-stream-1" :depends-on ("sequence-output-stream"))
    (:file "io-stream" :depends-on ("input-stream" "output-stream"))

@@ -23,14 +23,13 @@
 
 (defgeneric stream-copy (in out))
 
-(defmethod stream-copy ((in input-stream)
-                        (out output-stream))
+(defmethod stream-copy (in out)
   (let ((count 0))
     (loop
-       (multiple-value-bind (element status) (read in nil)
+       (multiple-value-bind (element status) (stream-read in)
          (ecase status
            ((nil)
-            (ecase (write element out)
+            (ecase (stream-write out element)
               ((nil) (incf count))
               ((:eof) (return (values count :eof)))
               ((:non-blocking (return (values count :non-blocking))))))

@@ -19,6 +19,39 @@
 (in-package :cl-stream)
 
 (defmethod stream-copy ((in buffered-input-stream)
+                        (out output-stream))
+  (let ((count 0))
+    (loop
+       (ecase (stream-fill-input-buffer in)
+         ((nil)
+          (let ((start (stream-input-index in))
+                (length (stream-input-length in)))
+            (ecase (stream-write-sequence out (stream-input-buffer in)
+                                          :start start
+                                          :end (+ start length))
+              ((nil)
+               (incf count length)
+               (incf (stream-input-index in) length))
+              ((:eof) (return (values count :eof)))
+              ((:non-blocking) (return (values count :non-blocking))))))
+         ((:eof) (return count))
+         ((:non-blocking) (return (values count :non-blocking)))))))
+
+(defmethod stream-copy ((in input-stream)
+                        (out buffered-output-stream))
+  (let ((count 0))
+    (loop
+       (multiple-value-bind (element status) (stream-read in)
+         (ecase status
+           ((nil)
+            (ecase (stream-write out element)
+              ((nil) (incf count))
+              ((:eof) (return (values count :eof)))
+              ((:non-blocking) (return (values count :non-blocking)))))
+           ((:eof) (stream-finish-output out) (return count))
+           ((:non-blocking) (return (values count :non-blocking))))))))
+
+(defmethod stream-copy ((in buffered-input-stream)
                         (out buffered-output-stream))
   (let ((count 0))
     (loop

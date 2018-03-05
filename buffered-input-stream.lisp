@@ -55,25 +55,6 @@ Returns NIL if successful, or
 (defmethod discard-stream-input-buffer ((stream buffered-input-stream))
   (setf (stream-input-buffer stream) nil))
 
-(defmethod stream-copy ((in buffered-input-stream)
-                        (out output-stream))
-  (let ((count 0))
-    (loop
-       (ecase (stream-fill-input-buffer in)
-         ((nil)
-          (let ((start (stream-input-index in))
-                (length (stream-input-length in)))
-            (ecase (stream-write-sequence out (stream-input-buffer in)
-                                          :start start
-                                          :end (+ start length))
-              ((nil)
-               (incf count length)
-               (incf (stream-input-index in) length))
-              ((:eof) (return (values count :eof)))
-              ((:non-blocking) (return (values count :non-blocking))))))
-         ((:eof) (return count))
-         ((:non-blocking) (return (values count :non-blocking)))))))
-
 (defmethod stream-input-buffer ((stream buffered-input-stream))
   (if (slot-boundp stream 'input-buffer)
       (slot-value stream 'input-buffer)
