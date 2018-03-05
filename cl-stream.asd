@@ -40,12 +40,15 @@
    (:file "input-stream-1" :depends-on ("sequence-output-stream"))
    (:file "io-stream" :depends-on ("input-stream" "output-stream"))
    (:file "misc" :depends-on ("package"))
-   (:file "multi-buffered-output-stream" :depends-on ("buffered-output-stream"))
+   (:file "multi-buffered-output-stream"
+          :depends-on ("buffered-output-stream"))
    (:file "output-stream" :depends-on ("stream"))
    (:file "package")
    (:file "queue" :depends-on ("io-stream"))
    (:file "sequence-input-stream" :depends-on ("buffered-input-stream"))
-   (:file "sequence-output-stream" :depends-on ("buffered-output-stream"))
+   (:file "sequence-output-stream"
+          :depends-on ("buffered-output-stream"))
    (:file "stdio" :depends-on ("input-stream" "output-stream"))
    (:file "stream" :depends-on ("package" "misc"))
-   (:file "string-output-stream" :depends-on ("sequence-output-stream"))))
+   (:file "string-output-stream"
+          :depends-on ("sequence-output-stream"))))
