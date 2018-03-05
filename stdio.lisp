@@ -71,16 +71,12 @@
   (or *stdin*
       (error "Please use one of the -STDIO packages for backend.")))
 
-(declaim (ftype (function () input-stream) stdin))
-
 (defvar *stdout*
   *standard-output*)
 
 (defun stdout ()
   (or *stdout*
       (error "Please use one of the -STDIO packages for backend.")))
-
-(declaim (ftype (function () output-stream) stdout))
 
 (defun write (element &optional (stream (stdout)))
   (stream-write stream element))

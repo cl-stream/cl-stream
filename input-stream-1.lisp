@@ -20,7 +20,7 @@
 
 ;;  Split for dependency on sequence-output-stream.lisp
 
-(defmethod stream-read-until ((stream input-stream) end-element)
+(defmethod stream-read-until (stream end-element)
   (block nil
     (let ((type (stream-element-type stream)))
       (assert (typep end-element type))
@@ -48,5 +48,5 @@
 
 (defgeneric stream-read-line (input-stream))
 
-(defmethod stream-read-line ((stream input-stream))
+(defmethod stream-read-line (stream)
   (stream-read-until stream #\Newline))

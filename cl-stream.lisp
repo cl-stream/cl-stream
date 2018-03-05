@@ -11,6 +11,9 @@
 (defmethod stream-finish ((stream cl:stream))
   (cl:finish-output stream))
 
+(defmethod stream-open-p ((stream cl:stream))
+  (cl:open-stream-p stream))
+
 (defmethod stream-read ((stream cl:stream))
   (let ((element-type (cl:stream-element-type stream)))
     (cond ((subtypep element-type 'unsigned-byte)
