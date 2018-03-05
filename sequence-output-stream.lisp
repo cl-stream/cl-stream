@@ -19,7 +19,9 @@
 (in-package :cl-stream)
 
 (defclass sequence-output-stream (buffered-output-stream)
-  ()
+  ((open-p :initform t
+           :accessor stream-open-p
+           :type boolean))
   (:documentation "A buffered output stream that writes to a sequence."))
 
 (defgeneric sequence-output-stream-sequence (sequence-output-stream)
@@ -43,6 +45,9 @@ SEQUENCE-OUTPUT-STREAM."))
         (make-array `(,*stream-default-buffer-size*)
                     :element-type element-type
                     :adjustable t)))
+
+(defmethod stream-close ((stream sequence-output-stream))
+  (setf (stream-open-p stream) nil))
 
 (defmethod stream-element-type ((stream sequence-output-stream))
   (array-element-type (stream-output-buffer stream)))

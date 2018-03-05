@@ -19,9 +19,7 @@
 (in-package :cl-stream)
 
 (defclass stream ()
-  ((open-p :initform t
-           :accessor stream-open-p
-           :type boolean))
+  ()
   (:documentation "Base class for all streams."))
 
 (defgeneric check-if-open (stream))
@@ -39,6 +37,9 @@ or NIL for non-blocking mode."))
 
 (defgeneric stream-element-type (stream)
   (:documentation "Returns the type of elements of STREAM."))
+
+(defgeneric stream-open-p (stream)
+  (:documentation "Returns T is STREAM is open, or NIL if closed."))
 
 (define-condition stream-error (error)
   ((stream :initarg :stream
@@ -72,9 +73,6 @@ or write to a closed stream."))
 
 (defmethod stream-blocking-p ((stream stream))
   t)
-
-(defmethod stream-close ((stream stream))
-  (setf (stream-open-p stream) nil))
 
 (defmacro with-stream ((var stream) &body body)
   "Ensures STREAM gets closed returning from BODY with VAR bound to STREAM."

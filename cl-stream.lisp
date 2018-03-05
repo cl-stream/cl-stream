@@ -2,8 +2,7 @@
 (in-package :cl-stream)
 
 (defmethod stream-close ((stream cl:stream))
-  (cl:close stream)
-  (call-next-method))
+  (cl:close stream))
 
 (defmethod stream-element-type ((stream cl:stream))
   (cl:stream-element-type stream))
@@ -12,7 +11,7 @@
   (cl:finish-output stream))
 
 (defmethod stream-open-p ((stream cl:stream))
-  (cl:open-stream-p stream))
+  (and (cl:open-stream-p stream) t))
 
 (defmethod stream-read ((stream cl:stream))
   (let ((element-type (cl:stream-element-type stream)))
