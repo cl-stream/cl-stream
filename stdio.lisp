@@ -62,12 +62,10 @@
   (or *stderr*
       (error "Please use one of the -STDIO packages for backend.")))
 
-(declaim (ftype (function () output-stream) stderr))
-
 (defvar *stdin*
   *standard-input*)
 
-(defun cl-stdin ()
+(defun stdin ()
   (or *stdin*
       (error "Please use one of the -STDIO packages for backend.")))
 
