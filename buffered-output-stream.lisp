@@ -68,7 +68,12 @@ MAKE-STREAM-OUTPUT-BUFFER to create it if needed."))
   (flush stream))
 
 (defmethod stream-close :after ((stream buffered-output-stream))
-  (discard-stream-output-buffer stream))
+  (stream-discard-output-buffer stream))
+
+(defmethod stream-discard-output-buffer ((stream t)))
+
+(defmethod stream-discard-output-buffer ((s buffered-output-stream))
+  (setf (stream-output-buffer s) nil))
 
 (defmethod stream-copy ((in input-stream)
                         (out buffered-output-stream))

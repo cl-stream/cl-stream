@@ -50,8 +50,6 @@
    #:buffered-input-stream
    #:buffered-output-stream
    #:close
-   #:discard-stream-input-buffer
-   #:discard-stream-output-buffer
    #:flush
    #:input-buffer
    #:input-stream
@@ -82,6 +80,8 @@
    #:stream
    #:stream-blocking-p
    #:*stream-default-buffer-size*
+   #:stream-discard-input-buffer
+   #:stream-discard-output-buffer
    #:stream-element-type
    #:stream-closed-error
    #:stream-copy
