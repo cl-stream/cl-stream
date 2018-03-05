@@ -70,6 +70,20 @@ MAKE-STREAM-OUTPUT-BUFFER to create it if needed."))
 (defmethod stream-close :after ((stream buffered-output-stream))
   (discard-stream-output-buffer stream))
 
+(defmethod stream-copy ((in input-stream)
+                        (out buffered-output-stream))
+  (let ((count 0))
+    (loop
+       (multiple-value-bind (element status) (stream-read in)
+         (ecase status
+           ((nil)
+            (ecase (stream-write out element)
+              ((nil) (incf count))
+              ((:eof) (return (values count :eof)))
+              ((:non-blocking) (return (values count :non-blocking)))))
+           ((:eof) (stream-finish-output out) (return count))
+           ((:non-blocking) (return (values count :non-blocking))))))))
+
 (defmethod stream-finish-output ((stream buffered-output-stream))
   "Flushes the output buffer of BUFFERED-OUTPUT-STREAM
 by repeatedly calling STREAM-FLUSH-OUTPUT until empty. Returns

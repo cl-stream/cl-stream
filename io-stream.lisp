@@ -20,3 +20,19 @@
 
 (defclass io-stream (input-stream output-stream)
   ())
+
+(defgeneric stream-copy (in out))
+
+(defmethod stream-copy ((in input-stream)
+                        (out output-stream))
+  (let ((count 0))
+    (loop
+       (multiple-value-bind (element status) (read in nil)
+         (ecase status
+           ((nil)
+            (ecase (write element out)
+              ((nil) (incf count))
+              ((:eof) (return (values count :eof)))
+              ((:non-blocking (return (values count :non-blocking))))))
+           ((:eof) (return count))
+           ((:non-blocking) (return (values count :non-blocking))))))))

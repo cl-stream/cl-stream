@@ -84,6 +84,7 @@
    #:*stream-default-buffer-size*
    #:stream-element-type
    #:stream-closed-error
+   #:stream-copy
    #:stream-end-error
    #:stream-error
    #:stream-error-stream
