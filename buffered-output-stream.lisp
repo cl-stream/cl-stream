@@ -62,15 +62,12 @@ MAKE-STREAM-OUTPUT-BUFFER to create it if needed."))
 
 (defgeneric stream-write-element-to-buffer (stream element))
 
-(defmethod make-stream-output-buffer ((stream buffered-output-stream))
-  (make-array `(,(stream-output-buffer-size stream))
-              :element-type (stream-element-type stream)))
-
 (defmethod stream-clear-output ((stream buffered-output-stream))
-  (setf (stream-output-buffer stream) nil))
+  (setf (stream-output-index stream) 0
+        (stream-output-length stream) 0))
 
 (defmethod stream-close :before ((stream buffered-output-stream))
-  (flush stream))
+  (stream-flush stream))
 
 (defmethod stream-close :after ((stream buffered-output-stream))
   (stream-discard-output-buffer stream))
@@ -79,6 +76,9 @@ MAKE-STREAM-OUTPUT-BUFFER to create it if needed."))
 
 (defmethod stream-discard-output-buffer ((s buffered-output-stream))
   (setf (stream-output-buffer s) nil))
+
+(defmethod stream-element-type ((s buffered-output-stream))
+  (slot-value s 'element-type))
 
 (defmethod stream-finish-output ((stream buffered-output-stream))
   "Flushes the output buffer of BUFFERED-OUTPUT-STREAM
@@ -105,13 +105,6 @@ by repeatedly calling STREAM-FLUSH-OUTPUT until empty. Returns
 
 (defmethod (setf stream-output-buffer) (value (stream buffered-output-stream))
   (setf (slot-value stream 'output-buffer) value))
-
-(defmethod stream-write-element-to-buffer ((stream buffered-output-stream)
-                                           element)
-  (setf (aref (stream-output-buffer stream) (stream-output-length stream))
-        element)
-  (incf (stream-output-length stream))
-  nil)
 
 (defmethod stream-write ((stream buffered-output-stream) element)
   (check-if-open stream)
