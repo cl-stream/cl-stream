@@ -30,7 +30,8 @@
   :depends-on ("closer-mop")
   :description "Stream classes for Common Lisp"
   :components
-  ((:file "buffered-input-stream" :depends-on ("input-stream"))
+  ((:file "array-output-stream" :depends-on ("buffered-output-stream"))
+   (:file "buffered-input-stream" :depends-on ("input-stream"))
    (:file "buffered-io-stream" :depends-on ("buffered-input-stream"
                                             "buffered-output-stream"
                                             "io-stream"))

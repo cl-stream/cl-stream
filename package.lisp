@@ -116,7 +116,8 @@
    #:string-output-stream-string
    #:with-input-from-sequence
    #:with-input-from-string
-   #:with-output-to-sequence
+   #:with-output-to-array
+   #:with-output-to-list
    #:with-output-to-string
    #:with-stream
    #:write

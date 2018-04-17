@@ -24,7 +24,7 @@
   (block nil
     (let ((type (stream-element-type stream)))
       (assert (typep end-element type))
-      (with-output-to-sequence (out type)
+      (with-output-to-array (out type)
         (loop
            (multiple-value-bind (element state) (stream-read stream)
              (case state

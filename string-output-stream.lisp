@@ -18,20 +18,19 @@
 
 (in-package :cl-stream)
 
-(defclass string-output-stream (sequence-output-stream)
+(defclass string-output-stream (array-output-stream)
   ()
   (:default-initargs :element-type 'character))
 
-(defgeneric string-output-stream-string (string-output-stream))
-
+(defmethod initialize-instance :before ((s string-output-stream) &rest initargs
+                                        &key element-type &allow-other-keys)
+  (assert (subtypep element-type 'character)))
+  
 (defun string-output-stream (&key (element-type 'character)
                                (output-buffer-size *stream-default-buffer-size*))
   (make-instance 'string-output-stream
                  :element-type element-type
                  :output-buffer-size output-buffer-size))
-
-(defmethod string-output-stream-string ((stream string-output-stream))
-  (sequence-output-stream-sequence stream))
 
 (defmacro with-output-to-string ((var) &body body)
   "Binds VAR to a new sequence output stream with element-type
