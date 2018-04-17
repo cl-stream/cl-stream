@@ -19,7 +19,9 @@
 (in-package :cl-stream)
 
 (defclass buffered-output-stream (output-stream)
-  ((output-buffer)
+  ((element-type :initarg :element-type
+                 :initform t)
+   (output-buffer)
    (output-buffer-size :initarg :output-buffer-size
                        :initform *stream-default-buffer-size*
                        :reader stream-output-buffer-size)
