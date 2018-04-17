@@ -1,5 +1,4 @@
-;;
-;;  cl-stream  -  Stream classes for Common Lisp
+;;;;  cl-stream  -  Stream classes for Common Lisp
 ;;
 ;;  Copyright 2017,2018 Thomas de Grivel <thoxdg@gmail.com>
 ;;
@@ -20,8 +19,7 @@
 
 (defpackage :cl-stream
   (:nicknames :stream)
-  (:use
-   :common-lisp)
+  (:use :common-lisp)
   (:shadow
    #:close
    #:input-stream

@@ -21,63 +21,27 @@
 (defclass sequence-output-stream (buffered-output-stream)
   ((open-p :initform t
            :accessor stream-open-p
-           :type boolean))
+           :type boolean)
+   (element-type :initarg :element-type
+                 :initform t
+                 :reader stream-element-type))
   (:documentation "A buffered output stream that writes to a sequence."))
 
 (defgeneric sequence-output-stream-sequence (sequence-output-stream)
   (:documentation "Returns the sequence that was written to
 SEQUENCE-OUTPUT-STREAM."))
 
-(defgeneric sequence-output-stream-reset (sequence-output-stream))
+(defgeneric sequence-output-stream-reset (sequence-output-stream)
+  (:documentation "Resets SEQUENCE-OUTPUT-STREAM to an empty
+ sequence."))
 
-(defmethod sequence-output-stream-sequence ((stream sequence-output-stream))
-  (subseq (stream-output-buffer stream) 0 (stream-output-length stream)))
-
-(defmethod sequence-output-stream-reset ((stream sequence-output-stream))
-  (setf (stream-output-length stream) 0))
-
-(defmethod initialize-instance ((stream sequence-output-stream)
-                                &rest initargs
-                                &key element-type &allow-other-keys)
-  (declare (ignore initargs))
-  (call-next-method)
-  (setf (slot-value stream 'output-buffer)
-        (make-array `(,*stream-default-buffer-size*)
-                    :element-type element-type
-                    :adjustable t)))
+(defmethod sequence-output-stream-sequence ((stream
+                                             sequence-output-stream))
+  (subseq (stream-output-buffer stream)
+          0 (stream-output-length stream)))
 
 (defmethod stream-close ((stream sequence-output-stream))
   (setf (stream-open-p stream) nil))
 
-(defmethod stream-element-type ((stream sequence-output-stream))
-  (array-element-type (stream-output-buffer stream)))
-
-(defmethod stream-output-buffer-size ((stream sequence-output-stream))
-  (length (stream-output-buffer stream)))
-
 (defmethod stream-flush ((stream sequence-output-stream))
   nil)
-
-(defmethod stream-flush-output-buffer ((stream sequence-output-stream))
-  (setf (slot-value stream 'output-buffer)
-        (let ((output-buffer (stream-output-buffer stream)))
-          (adjust-array output-buffer
-                        `(,(+ (length output-buffer)
-                              *stream-default-buffer-size*)))))
-  nil)
-
-(defmacro with-output-to-sequence ((var element-type) &body body)
-  "Binds VAR to a new sequence output stream with element-type
-ELEMENT-TYPE. Returns the sequence output stream sequence if
-BODY returns normally. The stream is closed after BODY returns
-normally or before it is aborted by a control transfer of some kind."
-  (let ((stream (gensym "STREAM-")))
-    `(let ((,stream (make-instance 'sequence-output-stream
-                                   :element-type ,element-type)))
-       (unwind-protect (let ((,var ,stream))
-                         ,@body
-                         (sequence-output-stream-sequence ,stream))
-         (close ,stream)))))
-
-(defmacro with-output-to-string ((var) &body body)
-  `(with-output-to-sequence (,var 'string) ,@body))
