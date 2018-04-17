@@ -45,11 +45,11 @@ gets flushed. To subclass it actual methods are needed for
 
 (defgeneric stream-finish-output (buffered-output-stream)
   (:documentation "Ensures that the contents of the output buffer are
-transmitted before returning."))
+transmitted before returning by repeatedly calling STREAM-FLUSH-OUTPUT."))
 
 (defgeneric stream-flush-output (buffered-output-stream)
   (:documentation "Tries to flush once the stream output buffer. Returns
- NIL if successful, or
+ NIL if the output buffer was partially or completely flushed, or
  :EOF if end of file was reached, or
  :NON-BLOCKING if operation would block."))
 
