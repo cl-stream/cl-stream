@@ -63,7 +63,7 @@
                 (stream-output-buffer-size underlying-stream))
           (let ((r (stream-flush-output-buffer underlying-stream)))
             (when (= 0 (stream-output-length underlying-stream))
-              (discard-stream-output-buffer underlying-stream)
+              (stream-discard-output-buffer underlying-stream)
               (setf (queue-first queue) nil)
               (stream-read queue)
               (decf (stream-output-length stream)
