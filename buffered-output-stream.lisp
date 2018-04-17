@@ -32,7 +32,10 @@
                   :accessor stream-output-length
                   :type fixnum+))
   (:documentation "An output stream that buffers its writes until it
-gets flushed."))
+gets flushed. To subclass it actual methods are needed for
+ MAKE-STREAM-OUTPUT-BUFFER
+ STREAM-WRITE-ELEMENT-TO-BUFFER
+ STREAM-FLUSH-OUTPUT"))
 
 (defgeneric make-stream-output-buffer (buffered-output-stream)
   (:documentation "Returns a new output buffer for stream."))
