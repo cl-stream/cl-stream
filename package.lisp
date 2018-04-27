@@ -88,7 +88,7 @@
    #:stream-error-stream
    #:stream-fill-input-buffer
    #:stream-flush
-   #:stream-flush-output-buffer
+   #:stream-flush-output
    #:stream-input-buffer
    #:stream-input-buffer-size
    #:stream-input-error

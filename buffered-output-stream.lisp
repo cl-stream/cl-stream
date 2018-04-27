@@ -40,12 +40,11 @@ gets flushed. To subclass it actual methods are needed for
 (defgeneric make-stream-output-buffer (buffered-output-stream)
   (:documentation "Returns a new output buffer for stream."))
 
+(defgeneric stream-buffer-element (stream position)
+  (:documentation "Returns the element in stream buffer at position."))
+
 (defgeneric stream-clear-output (buffered-output-stream)
   (:documentation "Removes the contents of the output buffer."))
-
-(defgeneric stream-finish-output (buffered-output-stream)
-  (:documentation "Ensures that the contents of the output buffer are
-transmitted before returning by repeatedly calling STREAM-FLUSH-OUTPUT."))
 
 (defgeneric stream-flush-output (buffered-output-stream)
   (:documentation "Tries to flush once the stream output buffer. Returns
@@ -80,7 +79,7 @@ MAKE-STREAM-OUTPUT-BUFFER to create it if needed."))
 (defmethod stream-element-type ((s buffered-output-stream))
   (slot-value s 'element-type))
 
-(defmethod stream-finish-output ((stream buffered-output-stream))
+(defmethod stream-flush ((stream buffered-output-stream))
   "Flushes the output buffer of BUFFERED-OUTPUT-STREAM
 by repeatedly calling STREAM-FLUSH-OUTPUT until empty. Returns
  NIL if output buffer was empty or emptied, or
@@ -111,7 +110,7 @@ by repeatedly calling STREAM-FLUSH-OUTPUT until empty. Returns
   (assert (typep element (stream-element-type stream)))
   (if (< (stream-output-length stream) (stream-output-buffer-size stream))
       (stream-write-element-to-buffer stream element)
-      (case (stream-flush-output-buffer stream)
+      (case (stream-flush-output stream)
         ((nil) (stream-write-element-to-buffer stream element))
         ((:eof) :eof)
         ((:non-blocking) :non-blocking)

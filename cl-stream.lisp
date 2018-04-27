@@ -16,7 +16,7 @@
 (defmethod stream-element-type ((stream cl:stream))
   (cl:stream-element-type stream))
 
-(defmethod stream-finish ((stream cl:stream))
+(defmethod stream-finish-output ((stream cl:stream))
   (cl:finish-output stream))
 
 (defmethod stream-open-p ((stream cl:stream))
