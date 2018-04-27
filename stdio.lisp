@@ -58,25 +58,13 @@
 (defvar *stderr*
   *error-output*)
 
-(defun stderr ()
-  (or *stderr*
-      (error "Please use one of the -STDIO packages for backend.")))
-
 (defvar *stdin*
   *standard-input*)
-
-(defun stdin ()
-  (or *stdin*
-      (error "Please use one of the -STDIO packages for backend.")))
 
 (defvar *stdout*
   *standard-output*)
 
-(defun stdout ()
-  (or *stdout*
-      (error "Please use one of the -STDIO packages for backend.")))
-
-(defun write (element &optional (stream (stdout)))
+(defun write (element &optional (stream *stdout*))
   "Tries to write one element to STREAM.
 Returns a state indicator which is
  NIL if write succeeded,
@@ -84,6 +72,11 @@ Returns a state indicator which is
  :NON-BLOCKING if write would block."
   (stream-write stream element))
 
-(defun write-sequence (seq &key (stream (stdout)) (start 0)
+(defun write-sequence (seq &key (stream *stdout*) (start 0)
                              (end (length seq)))
   (stream-write-sequence stream seq :start start :end end))
+
+(defun write-string (string &key (stream *stdout*) (start 0)
+                              (end (length string)))
+  (declare (type string string))
+  (stream-write-sequence stream string :start start :end end))
