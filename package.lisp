@@ -42,7 +42,8 @@
    #:with-input-from-string
    #:with-output-to-string
    #:write
-   #:write-sequence)
+   #:write-sequence
+   #:write-string)
   (:export
    #:+eof+
    #:buffered-input-stream
@@ -119,4 +120,5 @@
    #:with-output-to-string
    #:with-stream
    #:write
-   #:write-sequence))
+   #:write-sequence
+   #:write-string))
