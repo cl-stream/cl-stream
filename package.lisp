@@ -73,9 +73,6 @@
    #:*stdin*
    #:*stdout*
    #:*stderr*
-   #:stdin
-   #:stdout
-   #:stderr
    #:stream
    #:stream-blocking-p
    #:*stream-default-buffer-size*
