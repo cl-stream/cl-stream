@@ -1,15 +1,6 @@
 
 (in-package :cl-stream)
 
-;#+sbcl ;; duh ??
-;(defmethod sb-mop:compute-slots ((class sb-pcl:system-class))
-;  )
-
-;(eval-when (:compile-toplevel :load-toplevel :execute)
-;  (closer-mop:add-direct-subclass
-;   (find-class 'io-stream)
-;   (find-class 'cl:stream)))
-
 (defmethod stream-close ((stream cl:stream))
   (cl:close stream))
 
