@@ -22,7 +22,7 @@
   ())
 
 (defmethod make-stream-output-buffer ((stream vector-output-stream))
-  (make-vector `(,(stream-output-buffer-size stream))
+  (make-array `(,(stream-output-buffer-size stream))
               :element-type (stream-element-type stream)))
 
 (defmethod stream-flush-output ((stream vector-output-stream))
