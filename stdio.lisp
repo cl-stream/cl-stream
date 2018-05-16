@@ -21,10 +21,10 @@
 (defun close (stream)
   (stream-close stream))
 
-(defun flush (&optional (stream (stdout)))
+(defun flush (&optional (stream *stdout*))
   (stream-flush stream))
 
-(defun read (&optional (stream (stdin))
+(defun read (&optional (stream *stdin*)
                (eof-error-p t)
                (eof-value nil)
                (recursive-p nil))
@@ -38,21 +38,21 @@
       ((:non-blocking) (values element state))
       (t (error 'stream-error :stream stream)))))
 
-(defun read-sequence (seq &key (stream (stdin))
+(defun read-sequence (seq &key (stream *stdin*)
                             (start 0)
                             (end (length seq)))
   (stream-read-sequence stream seq :start start :end end))
 
-(defun read-sequence-until (end-element seq &key (stream (stdin))
+(defun read-sequence-until (end-element seq &key (stream *stdin*)
                                               (start 0)
                                               (end (length seq)))
   (stream-read-sequence-until stream end-element seq :start start
                               :end end))
 
-(defun read-until (end-element &optional (stream (stdin)))
+(defun read-until (end-element &optional (stream *stdin*))
   (stream-read-until stream end-element))
 
-(defun read-line (&optional (stream (stdin)))
+(defun read-line (&optional (stream *stdin*))
   (stream-read-line stream))
 
 (defvar *stderr*
