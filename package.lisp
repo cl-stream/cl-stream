@@ -82,6 +82,7 @@
    #:stream-element-type
    #:stream-closed-error
    #:stream-copy
+   #:stream-copy-n
    #:stream-end-error
    #:stream-error
    #:stream-error-stream

@@ -23,6 +23,8 @@
 
 (defgeneric stream-copy (in out))
 
+(defgeneric stream-copy-n (in out limit))
+
 (defmethod stream-copy (in out)
   (let ((count 0)
         (copy-status t))
@@ -37,4 +39,22 @@
                     ((:non-blocking (setq copy-status :non-blocking)))))
            ((:eof) (setq copy-status nil))
            ((:non-blocking) (setq copy-status :non-blocking)))))
+    (values count copy-status)))
+
+(defmethod stream-copy-n (in out (limit fixnum))
+  (let ((count 0)
+        (copy-status t))
+    (loop
+       (unless (eq t copy-status)
+         (return))
+       (multiple-value-bind (element status) (stream-read in)
+         (ecase status
+           ((nil) (ecase (stream-write out element)
+                    ((nil) (incf count))
+                    ((:eof) (setq copy-status :eof))
+                    ((:non-blocking (setq copy-status :non-blocking)))))
+           ((:eof) (setq copy-status nil))
+           ((:non-blocking) (setq copy-status :non-blocking))))
+       (unless (< count limit)
+         (return)))
     (values count copy-status)))
