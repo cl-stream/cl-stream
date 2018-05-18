@@ -65,7 +65,7 @@ or write to a closed stream."))
 (defvar *stream-default-buffer-size*
   4096)
 
-(defmethod check-if-open ((stream stream))
+(defmethod check-if-open (stream)
   "Checks if STREAM is open and signals an error otherwise."
   (unless (stream-open-p stream)
     (error 'stream-closed-error
