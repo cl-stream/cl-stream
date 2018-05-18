@@ -86,6 +86,7 @@
    #:stream-end-error
    #:stream-error
    #:stream-error-stream
+   #:stream-fd
    #:stream-fill-input-buffer
    #:stream-flush
    #:stream-flush-output
