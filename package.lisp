@@ -77,6 +77,7 @@
    #:stream-blocking-p
    #:*stream-default-buffer-size*
    #:stream-discard-input-buffer
+   #:stream-discard-n
    #:stream-discard-output-buffer
    #:stream-element-type
    #:stream-closed-error

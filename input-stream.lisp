@@ -27,6 +27,9 @@
   (:documentation "An error which is signalled when an input error
 occurs on a stream."))
 
+(defgeneric stream-discard-n (input-stream count)
+  (:documentation "Discard COUNT items from INPUT-STREAM."))
+
 (defgeneric stream-read (input-stream)
   (:documentation "Tries to read one element from STREAM.
 Returns two values : the element or NIL if read failed;
@@ -62,6 +65,19 @@ until END-ELEMENT is read. Returns two values :
   NIL if READ-UNTIL succeeded
   :EOF if end of file was reached
   :NON-BLOCKING if read would block."))
+
+(defmethod stream-discard-n (stream (count fixnum))
+  (check-if-open stream)
+  (loop
+     (unless (< 0 count)
+       (return (values 0 nil)))
+     (multiple-value-bind (element state) (stream-read stream)
+       (declare (ignore element))
+       (case state
+         ((nil) (decf count))
+         ((:eof) (return (values count :eof)))
+         ((:non-blocking) (return (values count :non-blocking)))
+         (otherwise (error 'stream-input-error :stream stream))))))
 
 (defmethod stream-read-sequence ((stream input-stream) seq
                                  &key (start 0) (end (length seq)))
