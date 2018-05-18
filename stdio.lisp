@@ -18,6 +18,15 @@
 
 (in-package :cl-stream)
 
+(defparameter *stderr*
+  *error-output*)
+
+(defparameter *stdin*
+  *standard-input*)
+
+(defparameter *stdout*
+  *standard-output*)
+
 (defun close (stream)
   (stream-close stream))
 
@@ -54,15 +63,6 @@
 
 (defun read-line (&optional (stream *stdin*))
   (stream-read-line stream))
-
-(defvar *stderr*
-  *error-output*)
-
-(defvar *stdin*
-  *standard-input*)
-
-(defvar *stdout*
-  *standard-output*)
 
 (defun write (element &optional (stream *stdout*))
   "Tries to write one element to STREAM.
