@@ -24,6 +24,7 @@
 
 (defmethod initialize-instance :before ((s string-output-stream) &rest initargs
                                         &key element-type &allow-other-keys)
+  (declare (ignore initargs))
   (assert (subtypep element-type 'character)))
   
 (defun string-output-stream (&key (element-type 'character)
