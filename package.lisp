@@ -48,6 +48,7 @@
    #:+eof+
    #:buffered-input-stream
    #:buffered-output-stream
+   #:character-stream
    #:close
    #:flush
    #:input-buffer
@@ -113,6 +114,7 @@
    #:stream-write-sequence
    #:string-output-stream
    #:string-output-stream-string
+   #:ub8-stream
    #:with-input-from-sequence
    #:with-input-from-string
    #:with-output-to-array

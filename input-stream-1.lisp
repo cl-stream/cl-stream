@@ -48,5 +48,5 @@
 
 (defgeneric stream-read-line (input-stream))
 
-(defmethod stream-read-line (stream)
+(defmethod stream-read-line ((stream character-stream))
   (stream-read-until stream #\Newline))

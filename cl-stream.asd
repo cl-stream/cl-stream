@@ -35,6 +35,7 @@
                                             "buffered-output-stream"
                                             "io-stream"))
    (:file "buffered-output-stream" :depends-on ("output-stream"))
+   (:file "character-stream" :depends-on ("stream"))
    (:file "cl-stream" :depends-on ("buffered-io-stream"))
    (:file "input-stream" :depends-on ("stream"))
    (:file "input-stream-1" :depends-on ("vector-output-stream"))
@@ -52,4 +53,5 @@
    (:file "stream" :depends-on ("package" "misc"))
    (:file "string-output-stream"
           :depends-on ("sequence-output-stream"))
+   (:file "ub8-stream" :depends-on ("stream"))
    (:file "vector-output-stream" :depends-on ("buffered-output-stream"))))

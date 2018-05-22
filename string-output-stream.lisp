@@ -18,7 +18,7 @@
 
 (in-package :cl-stream)
 
-(defclass string-output-stream (array-output-stream)
+(defclass string-output-stream (character-stream array-output-stream)
   ()
   (:default-initargs :element-type 'character))
 
