@@ -27,7 +27,6 @@
   :name "cl-stream"
   :author "Thomas de Grivel <thoxdg@gmail.com>"
   :version "0.1"
-  :depends-on ("closer-mop")
   :description "Stream classes for Common Lisp"
   :components
   ((:file "buffered-input-stream" :depends-on ("input-stream"))
