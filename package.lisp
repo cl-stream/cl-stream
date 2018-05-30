@@ -113,7 +113,6 @@
    #:stream-write-element-to-buffer
    #:stream-write-sequence
    #:string-output-stream
-   #:string-output-stream-string
    #:ub8-stream
    #:with-input-from-sequence
    #:with-input-from-string
