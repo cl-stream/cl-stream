@@ -18,7 +18,7 @@
 
 (in-package :cl-stream)
 
-(defclass string-output-stream (character-stream array-output-stream)
+(defclass string-output-stream (character-stream vector-output-stream)
   ()
   (:default-initargs :element-type 'character))
 
@@ -38,5 +38,5 @@
 character. Returns the sequence output stream string if
 BODY returns normally. The stream is closed after BODY returns
 normally or before it is aborted by a control transfer of some kind."
-  `(with-output-to-sequence (,var 'character)
+  `(with-output-to-vector (,var 'character)
      ,@body))
