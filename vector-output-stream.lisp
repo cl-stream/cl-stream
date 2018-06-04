@@ -25,6 +25,12 @@
   (make-array `(,(stream-output-buffer-size stream))
               :element-type (stream-element-type stream)))
 
+(defmethod sequence-output-stream-reset ((stream vector-output-stream))
+  (setf (stream-output-length stream) 0))
+
+(defmethod stream-flush ((stream vector-output-stream))
+  nil)
+
 (defmethod stream-flush-output ((stream vector-output-stream))
   (setf (slot-value stream 'output-buffer)
         (let* ((output-buffer (stream-output-buffer stream))
