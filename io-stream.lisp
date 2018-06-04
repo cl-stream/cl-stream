@@ -41,7 +41,7 @@
            ((:non-blocking) (setq copy-status :non-blocking)))))
     (values count copy-status)))
 
-(defmethod stream-copy-n (in out (limit fixnum))
+(defmethod stream-copy-n (in out (limit integer))
   (let ((count 0)
         (copy-status t))
     (loop

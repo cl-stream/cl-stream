@@ -66,7 +66,7 @@ until END-ELEMENT is read. Returns two values :
   :EOF if end of file was reached
   :NON-BLOCKING if read would block."))
 
-(defmethod stream-discard-n (stream (count fixnum))
+(defmethod stream-discard-n (stream (count integer))
   (check-if-open stream)
   (loop
      (unless (< 0 count)

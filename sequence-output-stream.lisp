@@ -42,6 +42,3 @@ SEQUENCE-OUTPUT-STREAM."))
 
 (defmethod stream-close ((stream sequence-output-stream))
   (setf (stream-open-p stream) nil))
-
-(defmethod stream-flush ((stream sequence-output-stream))
-  nil)
