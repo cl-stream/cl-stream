@@ -23,11 +23,17 @@
                       :reader stream-underlying-stream
                       :type buffered-output-stream)))
 
+(defmethod make-stream-output-buffer ((stream multi-buffered-output-stream))
+  (make-instance 'queue))
+
+(defmethod stream-close ((stream multi-buffered-output-stream))
+  (stream-close (stream-underlying-stream stream)))
+
 (defmethod stream-element-type ((stream multi-buffered-output-stream))
   (stream-element-type (stream-underlying-stream stream)))
 
-(defmethod make-stream-output-buffer ((stream multi-buffered-output-stream))
-  (make-instance 'queue))
+(defmethod stream-open-p ((stream multi-buffered-output-stream))
+  (stream-open-p (stream-underlying-stream stream)))
 
 (defmethod stream-write ((stream multi-buffered-output-stream) element)
   (check-if-open stream)
