@@ -36,6 +36,7 @@
    (:file "buffered-output-stream" :depends-on ("output-stream"))
    (:file "character-stream" :depends-on ("stream"))
    (:file "cl-stream" :depends-on ("buffered-io-stream"))
+   (:file "conditions" :depends-on ("package"))
    (:file "input-stream" :depends-on ("stream"))
    (:file "input-stream-1" :depends-on ("vector-output-stream"))
    (:file "io-stream" :depends-on ("input-stream" "output-stream"))

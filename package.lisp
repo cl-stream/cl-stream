@@ -22,6 +22,7 @@
   (:use :common-lisp)
   (:shadow
    #:close
+   #:end-of-file
    #:input-stream
    #:open-stream-p
    #:output-stream
@@ -50,6 +51,7 @@
    #:buffered-output-stream
    #:character-stream
    #:close
+   #:end-of-file
    #:flush
    #:input-buffer
    #:input-stream
@@ -57,6 +59,7 @@
    #:make-stream-input-buffer
    #:make-stream-output-buffer
    #:multi-buffered-output-stream
+   #:non-blocking
    #:output-buffer
    #:output-stream
    #:queue
@@ -82,6 +85,8 @@
    #:stream-discard-output-buffer
    #:stream-element-type
    #:stream-closed-error
+   #:stream-condition
+   #:stream-condition-stream
    #:stream-copy
    #:stream-copy-n
    #:stream-end-error
