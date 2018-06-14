@@ -120,6 +120,7 @@
    #:stream-write-sequence
    #:string-input-stream
    #:string-output-stream
+   #:super-stream
    #:ub8-stream
    #:with-input-from-sequence
    #:with-input-from-string

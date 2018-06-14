@@ -52,5 +52,6 @@
    (:file "stream" :depends-on ("package" "misc"))
    (:file "string-output-stream"
           :depends-on ("sequence-output-stream"))
+   (:file "super-stream" :depends-on ("buffered-output-stream"))
    (:file "ub8-stream" :depends-on ("stream"))
    (:file "vector-output-stream" :depends-on ("buffered-output-stream"))))
