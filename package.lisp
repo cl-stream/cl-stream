@@ -70,6 +70,7 @@
    #:read-sequence
    #:read-sequence-until
    #:read-until
+   #:sequence-input-stream
    #:sequence-output-stream
    #:sequence-output-stream-reset
    #:sequence-output-stream-sequence
@@ -117,6 +118,7 @@
    #:stream-write
    #:stream-write-element-to-buffer
    #:stream-write-sequence
+   #:string-input-stream
    #:string-output-stream
    #:ub8-stream
    #:with-input-from-sequence

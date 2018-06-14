@@ -19,7 +19,8 @@
 (in-package :cl-stream)
 
 (defclass sequence-input-stream (buffered-input-stream)
-  ()
+  ((open-p :initform t
+           :type boolean))
   (:documentation "A buffered input stream that reads from a sequence."))
 
 (defmethod initialize-instance ((stream sequence-input-stream)
@@ -29,6 +30,12 @@
            (type sequence sequence))
   (call-next-method)
   (setf (slot-value stream 'input-buffer) sequence))
+
+(defmethod stream-close ((stream sequence-input-stream))
+  (setf (slot-value stream 'open-p) nil))
+
+(defmethod stream-open-p ((stream sequence-input-stream))
+  (slot-value stream 'open-p))
 
 (defmethod stream-element-type ((stream sequence-input-stream))
   (array-element-type (stream-input-buffer stream)))
@@ -42,19 +49,11 @@
 (defmethod stream-fill-input-buffer ((stream sequence-input-stream))
   :eof)
 
-(defmacro with-input-from-sequence ((var sequence) &body body)
-  "Binds VAR to a new sequence input stream reading from SEQUENCE.
-The stream is closed after BODY returns normally or before it is
-aborted by a control transfer of some kind."
-  (let ((stream (gensym "STREAM-")))
-    `(let ((,stream (make-instance 'sequence-input-stream :sequence ,sequence)))
-       (unwind-protect (let ((,var ,stream))
-                         ,@body)
-         (close ,stream)))))
+(defun sequence-input-stream (sequence)
+  "Returns a new sequence input stream reading from SEQUENCE."
+  (make-instance 'sequence-input-stream :sequence sequence))
 
-(defmacro with-input-from-string ((var string) &body body)
-  "Binds VAR to a new sequence input stream reading from STRING.
-The stream is closed after BODY returns normally or before it is
-aborted by a control transfer of some kind."
-  `(with-input-from-sequence (,var (the string ,string))
-     ,@body))
+(defun string-input-stream (string)
+  "Returns a new sequence input stream reading from STRING."
+  (declare (type string string))
+  (sequence-input-stream string))
