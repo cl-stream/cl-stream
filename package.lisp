@@ -46,6 +46,10 @@
    #:write-sequence
    #:write-string)
   (:export
+   #:*stderr*
+   #:*stdin*
+   #:*stdout*
+   #:*stream-default-buffer-size*
    #:+eof+
    #:buffered-input-stream
    #:buffered-output-stream
@@ -75,21 +79,17 @@
    #:sequence-output-stream-reset
    #:sequence-output-stream-sequence
    #:shadowing-import-from
-   #:*stdin*
-   #:*stdout*
-   #:*stderr*
    #:stream
    #:stream-blocking-p
-   #:*stream-default-buffer-size*
-   #:stream-discard-input-buffer
-   #:stream-discard-n
-   #:stream-discard-output-buffer
-   #:stream-element-type
    #:stream-closed-error
    #:stream-condition
    #:stream-condition-stream
    #:stream-copy
    #:stream-copy-n
+   #:stream-discard-input-buffer
+   #:stream-discard-n
+   #:stream-discard-output-buffer
+   #:stream-element-type
    #:stream-end-error
    #:stream-error
    #:stream-error-stream
@@ -130,4 +130,5 @@
    #:with-stream
    #:write
    #:write-sequence
-   #:write-string))
+   #:write-string
+   ))
