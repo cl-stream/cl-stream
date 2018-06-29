@@ -87,7 +87,7 @@ by repeatedly calling STREAM-FLUSH-OUTPUT until empty. Returns
  :NON-BLOCKING if write would block."
   (loop
      (case (stream-flush-output stream)
-       ((nil) (when (= 0 (stream-output-length stream))
+       ((nil) (when (= 0 (the fixnum (stream-output-length stream)))
                 (return)))
        ((:eof) (return :eof))
        ((:non-blocking (return :non-blocking)))
@@ -108,7 +108,8 @@ by repeatedly calling STREAM-FLUSH-OUTPUT until empty. Returns
 (defmethod stream-write ((stream buffered-output-stream) element)
   (check-if-open stream)
   (assert (typep element (stream-element-type stream)))
-  (if (< (stream-output-length stream) (stream-output-buffer-size stream))
+  (if (< (the fixnum (stream-output-length stream))
+         (the fixnum (stream-output-buffer-size stream)))
       (stream-write-element-to-buffer stream element)
       (case (stream-flush-output stream)
         ((nil) (stream-write-element-to-buffer stream element))
