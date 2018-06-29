@@ -19,12 +19,14 @@
 (in-package :cl-stream)
 
 (defclass queue (io-stream)
-  ((extend-by :initarg :extend-by
-              :initform *stream-default-buffer-size*
-              :accessor queue-extend-by
-              :type fixnum+)
-   (buffer :reader queue-buffer
-           :type array)
+  ((buffer-size :initarg :buffer-size
+                :initform *stream-default-buffer-size*
+                :accessor queue-buffer-size
+                :type fixnum+)
+   (buffer :type vector)
+   (element-type :initarg :type
+                 :initform t
+                 :accessor stream-element-type)
    (length :initform 0
            :accessor queue-length
            :type fixnum+)
@@ -35,55 +37,50 @@
                 :accessor queue-write-index
                 :type fixnum+)))
 
+(defgeneric make-queue-buffer (queue))
+(defgeneric queue-buffer (queue))
 (defgeneric queue-first (queue))
 (defgeneric (setf queue-first) (value queue))
+
+(defmethod make-queue-buffer ((queue queue))
+  (let ((size (queue-buffer-size queue))
+        (type (stream-element-type queue)))
+    (make-array `(,size)
+                :element-type type
+                :fill-pointer 0)))
+
+(defmethod queue-buffer ((queue queue))
+  (if (slot-boundp queue 'buffer)
+      (slot-value queue 'buffer)
+      (setf (slot-value queue 'buffer)
+            (make-queue-buffer queue))))
 
 (defmethod stream-blocking-p ((queue queue))
   nil)
 
-(defmethod stream-element-type ((queue queue))
-  (array-element-type (queue-buffer queue)))
-
-(defmethod initialize-instance ((queue queue) &rest initargs
-                                &key (element-type t)
-                                  (size *stream-default-buffer-size*))
-  (declare (ignore initargs))
-  (call-next-method)
-  (let ((buffer (make-array `(,size) :element-type element-type)))
-    (setf (slot-value queue 'buffer) buffer
-          (queue-extend-by queue) size))
-  queue)
-
 (defmethod stream-read ((queue queue))
-  (let ((buffer (queue-buffer queue))
-        (read-index (queue-read-index queue)))
-    (cond ((= 0 (queue-length queue))
-           (values nil :non-blocking))
-          (t
-           (let ((element (aref buffer read-index)))
-             (decf (queue-length queue))
-             (incf (queue-read-index queue))
-             (when (= (queue-read-index queue) (length buffer))
-               (setf (queue-read-index queue) 0))
-             (values element nil))))))
+  (if (= 0 (the fixnum (queue-length queue)))
+      (values nil :non-blocking)
+      (let* ((buffer (the vector (queue-buffer queue)))
+             (element (aref buffer (the fixnum
+                                        (queue-read-index queue)))))
+        (decf (the fixnum (queue-length queue)))
+        (let ((index (incf (the fixnum+ (queue-read-index queue)))))
+          (declare (type fixnum+ index))
+          (unless (< index (the fixnum (queue-buffer-size queue)))
+            (replace buffer buffer :start2 index)
+            (setf (the fixnum (queue-read-index queue)) 0)
+            (decf (the fixnum (fill-pointer buffer)) index)))
+        (values element nil))))
 
 (defmethod stream-write ((queue queue) element)
-  (let ((buffer (queue-buffer queue)))
-    (let ((length (length buffer)))
-      (when (= (queue-length queue) length)
-        (let ((new-length (+ length (queue-extend-by queue))))
-          (adjust-array buffer `(,new-length))
-          (let ((n (- length (queue-write-index queue))))
-            (dotimes (i n)
-              (setf (aref buffer (+ (- new-length n) i))
-                    (aref buffer (+ (queue-write-index queue) i))))
-            (setf (queue-read-index queue) (- new-length n))))))
+  (let ((buffer (the vector (queue-buffer queue))))
+    (vector-push-extend element buffer (queue-buffer-size queue))
     (incf (queue-length queue))
     (setf (aref buffer (queue-write-index queue)) element)
-    (incf (queue-write-index queue))
-    (when (= (queue-write-index queue) (length buffer))
-      (setf (queue-write-index queue) 0))
-    nil))
+    (setf (queue-write-index queue)
+          (mod (1+ (queue-write-index queue)) (length buffer))))
+  nil)
 
 (defmethod queue-first ((queue queue))
   (aref (queue-buffer queue) (queue-read-index queue)))
@@ -91,3 +88,6 @@
 (defmethod (setf queue-first) (value (queue queue))
   (setf (aref (queue-buffer queue) (queue-read-index queue))
         value))
+
+(defmethod queue-last ((queue queue))
+  (aref (queue-buffer queue) (queue-write-index queue)))
