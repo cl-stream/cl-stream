@@ -56,6 +56,7 @@
    #:character-stream
    #:close
    #:end-of-file
+   #:fixnum+
    #:flush
    #:input-buffer
    #:input-stream
