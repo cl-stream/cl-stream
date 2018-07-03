@@ -30,6 +30,10 @@
   (stream-discard-output-buffer stream)
   (stream-close (stream-underlying-stream stream)))
 
+(defmethod stream-discard-output-buffer ((stream multi-buffered-output-stream))
+  (stream-discard-output-buffer (stream-underlying-stream stream))
+  (call-next-method))
+
 (defmethod stream-element-type ((stream multi-buffered-output-stream))
   (stream-element-type (stream-underlying-stream stream)))
 
