@@ -40,6 +40,9 @@
    (:file "input-stream" :depends-on ("stream"))
    (:file "input-stream-1" :depends-on ("vector-output-stream"))
    (:file "io-stream" :depends-on ("input-stream" "output-stream"))
+   (:file "line-tracking-stream" :depends-on ("character-stream"
+                                              "input-stream"
+                                              "super-stream"))
    (:file "misc" :depends-on ("package"))
    (:file "multi-buffered-output-stream"
           :depends-on ("buffered-output-stream"))
