@@ -17,3 +17,18 @@
 ;;
 
 (in-package :cl-stream)
+
+(defmethod stream-copy ((in buffered-input-stream)
+                        (out buffered-output-stream))
+  (let ((copy-status t))
+    (loop
+       (unless (eq t copy-status)
+         (return))
+       (let ((status (stream-fill-input-buffer in)))
+         (ecase status
+           ((nil) (setf (stream-output-buffer out)
+                        (stream-input-buffer in))
+            (stream-flush out))
+           ((:eof) (setq copy-status :eof))
+           ((:non-blocking (setq copy-status :non-blocking))))))
+    copy-status))
