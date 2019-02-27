@@ -116,3 +116,32 @@ by repeatedly calling STREAM-FLUSH-OUTPUT until empty. Returns
         ((:eof) :eof)
         ((:non-blocking) :non-blocking)
         (otherwise (error 'stream-output-error :stream stream)))))
+
+(defmethod stream-write-sequence ((s buffered-output-stream)
+                                  (seq sequence)
+                                  &key start end)
+  (check-if-open s)
+  (setf start (or start 0))
+  (setf end (or end (length seq)))
+  (let* ((count 0)
+         (state
+          (flet ((write-element ()
+                   (stream-write-element-to-buffer
+                    s (aref seq start))
+                   (incf (the fixnum start))
+                   (incf (the fixnum count))))
+            (loop
+               (unless (< (the fixnum start) (the fixnum end))
+                 (return))
+               (cond ((< (the fixnum (stream-output-length s))
+                         (the fixnum (stream-output-buffer-size s)))
+                      (write-element))
+                     (t
+                      (case (stream-flush-output s)
+                        ((nil) (write-element))
+                        ((:eof) (return :eof))
+                        ((:non-blocking) (return :non-blocking))
+                        (otherwise (error 'stream-output-error
+                                          :stream s)))))))))
+    (when state
+      (values count state))))

@@ -39,7 +39,8 @@ Returns a state indicator which is NIL if write succeeded,
 :EOF if end of file was reached, or
 :NON-BLOCKING if write would block."))
 
-(defgeneric stream-write-sequence (output-stream seq &key start end)
+(defgeneric stream-write-sequence (output-stream seq
+                                   &key start end)
   (:documentation "Writes elements from SEQ from START to END
 to OUTPUT-STREAM. Returns two values :
  the number of elements written, and
@@ -51,21 +52,27 @@ to OUTPUT-STREAM. Returns two values :
 (defmethod stream-flush ((stream output-stream))
   nil)
 
-(defmethod stream-write-sequence ((stream output-stream) seq
-                                  &key (start 0) (end (length seq)))
+(defmethod stream-write-sequence ((stream output-stream)
+                                  (seq sequence)
+                                  &key start end)
   (check-if-open stream)
-  (let ((count 0))
-    (loop
-       (when (= start end)
-         (return))
-       (let ((state (stream-write stream (aref seq start))))
-         (case state
-           ((nil)
-            (incf start)
-            (incf count))
-           ((:eof)
-            (return (values count :eof)))
-           ((:non-blocking)
-            (return (values count :non-blocking)))
-           (otherwise
-            (error 'stream-output-error :stream stream)))))))
+  (setf start (or start 0))
+  (setf end (or end (length seq)))
+  (let* ((count 0)
+         (state
+          (loop
+             (unless (< (the fixnum start) (the fixnum end))
+               (return))
+             (let ((state (stream-write stream (aref seq start))))
+               (case state
+                 ((nil)
+                  (incf (the fixnum start))
+                  (incf (the fixnum count)))
+                 ((:eof)
+                  (return :eof))
+                 ((:non-blocking)
+                  (return :non-blocking))
+                 (otherwise
+                  (error 'stream-output-error :stream stream)))))))
+    (when state
+      (values count state))))

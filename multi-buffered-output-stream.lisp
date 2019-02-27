@@ -58,6 +58,31 @@
     (incf (the fixnum (stream-output-length stream)))
     (stream-write underlying-stream element)))
 
+(defmethod stream-write-sequence ((stream multi-buffered-output-stream)
+                                  (seq sequence)
+                                  &key start end)
+  (check-if-open stream)
+  (setf start (or start 0))
+  (setf end (or end (length seq)))
+  (let ((underlying-stream (stream-underlying-stream stream)))
+    (let* ((count 0)
+           (status
+            (loop
+               (unless (< (the fixnum start) (the fixnum end))
+                 (return))
+               (multi-buffer-write stream)
+               (case (stream-write underlying-stream (aref seq start))
+                 ((nil)
+                  (incf (the fixnum (stream-output-length stream)))
+                  (incf (the fixnum count))
+                  (incf start))
+                 ((:eof) (return :eof))
+                 ((:non-blocking) (return :non-blocking))
+                 (otherwise
+                  (error 'stream-output-error :stream stream))))))
+      (when status
+        (values count status)))))
+
 (defmethod multi-buffer-output ((stream multi-buffered-output-stream))
   (let ((queue (when (slot-boundp stream 'output-buffer)
                  (stream-output-buffer stream)))
