@@ -46,8 +46,7 @@
   (let ((size (queue-buffer-size queue))
         (type (stream-element-type queue)))
     (make-array `(,size)
-                :element-type type
-                :fill-pointer 0)))
+                :element-type type)))
 
 (defmethod queue-buffer ((queue queue))
   (if (slot-boundp queue 'buffer)
@@ -67,15 +66,14 @@
         (decf (the fixnum (queue-length queue)))
         (let ((index (incf (the fixnum+ (queue-read-index queue)))))
           (declare (type fixnum+ index))
-          (unless (< index (the fixnum (queue-buffer-size queue)))
+          (unless (< index (the fixnum (queue-write-index queue)))
             (replace buffer buffer :start2 index)
             (setf (the fixnum (queue-read-index queue)) 0)
-            (decf (the fixnum (fill-pointer buffer)) index)))
+            (decf (the fixnum (queue-write-index queue)) index)))
         (values element nil))))
 
 (defmethod stream-write ((queue queue) element)
   (let ((buffer (the vector (queue-buffer queue))))
-    (vector-push-extend element buffer (queue-buffer-size queue))
     (incf (queue-length queue))
     (setf (aref buffer (queue-write-index queue)) element)
     (setf (queue-write-index queue)
@@ -90,4 +88,7 @@
         value))
 
 (defmethod queue-last ((queue queue))
-  (aref (queue-buffer queue) (queue-write-index queue)))
+  (let ((size (queue-buffer-size queue)))
+    (when (< 0 (the fixnum (queue-length queue)))
+      (aref (queue-buffer queue)
+            (mod (+ size (1- (queue-write-index queue))) size)))))

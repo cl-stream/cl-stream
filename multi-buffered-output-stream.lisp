@@ -23,11 +23,13 @@
                       :reader stream-underlying-stream
                       :type buffered-output-stream)))
 
+(defgeneric multi-buffer-write (multi-buffered-output-stream))
+(defgeneric multi-buffer-output (multi-buffered-output-stream))
+
 (defmethod make-stream-output-buffer ((stream multi-buffered-output-stream))
   (make-instance 'queue))
 
 (defmethod stream-close ((stream multi-buffered-output-stream))
-  (stream-discard-output-buffer stream)
   (stream-close (stream-underlying-stream stream)))
 
 (defmethod stream-discard-output-buffer ((stream multi-buffered-output-stream))
@@ -40,15 +42,25 @@
 (defmethod stream-open-p ((stream multi-buffered-output-stream))
   (stream-open-p (stream-underlying-stream stream)))
 
+(defun queue-new-buffer (queue us)
+  (let ((buf (make-stream-output-buffer us)))
+    (stream-write queue buf)
+    buf))
+
 (defmethod multi-buffer-write ((stream multi-buffered-output-stream))
-  (let ((queue (stream-output-buffer stream))
-        (us (stream-underlying-stream stream)))
-    (let ((buf (cond ((= 0 (the fixnum (queue-length queue)))
-                      (let ((buf (make-stream-output-buffer us)))
-                        (stream-write queue buf)
-                        buf))
-                     (t (queue-last queue)))))
-      (setf (stream-output-buffer us) buf))))
+  (let* ((queue (stream-output-buffer stream))
+         (us (stream-underlying-stream stream))
+         (size (stream-output-buffer-size us))
+         (output-length (stream-output-length stream))
+         (buf (cond ((= 0 (the fixnum (queue-length queue)))
+                     (queue-new-buffer queue us))
+                    ((= 0 (mod output-length size))
+                     (queue-new-buffer queue us))
+                    (t (queue-last queue))))
+         (length (mod output-length size)))
+    (declare (type fixnum output-length size length))
+    (setf (stream-output-buffer us) buf
+          (stream-output-length us) length)))
 
 (defmethod stream-write ((stream multi-buffered-output-stream) element)
   (check-if-open stream)
@@ -64,40 +76,35 @@
   (check-if-open stream)
   (setf start (or start 0))
   (setf end (or end (length seq)))
-  (let ((underlying-stream (stream-underlying-stream stream)))
-    (let* ((count 0)
-           (status
-            (loop
-               (unless (< (the fixnum start) (the fixnum end))
-                 (return))
-               (multi-buffer-write stream)
-               (case (stream-write underlying-stream (aref seq start))
-                 ((nil)
-                  (incf (the fixnum (stream-output-length stream)))
-                  (incf (the fixnum count))
-                  (incf start))
-                 ((:eof) (return :eof))
-                 ((:non-blocking) (return :non-blocking))
-                 (otherwise
-                  (error 'stream-output-error :stream stream))))))
-      (when status
-        (values count status)))))
+  (let* ((us (stream-underlying-stream stream))
+         (count 0))
+    (loop
+       (unless (< (the fixnum start) (the fixnum end))
+         (return))
+       (multi-buffer-write stream)
+       (let* ((size (min (- (the fixnum end) (the fixnum start))
+                         (- (the fixnum (stream-output-buffer-size us))
+                            (the fixnum (stream-output-length us)))))
+              (end2 (+ start (the fixnum size))))
+         (stream-write-sequence us seq :start start :end (the fixnum end2))
+         (incf (the fixnum (stream-output-length stream)) size)
+         (incf (the fixnum count) size)
+         (incf (the fixnum start) size)))))
 
 (defmethod multi-buffer-output ((stream multi-buffered-output-stream))
-  (let ((queue (when (slot-boundp stream 'output-buffer)
-                 (stream-output-buffer stream)))
+  (let ((queue (stream-output-buffer stream))
         (us (stream-underlying-stream stream)))
-    (when (and queue (< 0 (the fixnum (queue-length queue))))
-      (let* ((first (queue-first queue))
-             (size (stream-output-buffer-size us))
-             (index (mod (the fixnum (stream-output-index stream))
-                         size))
-             (length (mod (the fixnum (stream-output-length stream))
-                          size)))
-        (declare (type fixnum size index length))
-        (setf (stream-output-buffer us) first
-              (stream-output-index us) index
-              (stream-output-length us) length)))))
+    (let* ((first (queue-first queue))
+           (size (stream-output-buffer-size us))
+           (output-length (stream-output-length stream))
+           (index (mod (the fixnum (stream-output-index us)) size))
+           (length (if (= 1 (the fixnum (queue-length queue)))
+                       (mod output-length size)
+                       (stream-output-buffer-size stream))))
+      (declare (type fixnum size output-length index length))
+      (setf (stream-output-buffer us) first
+            (stream-output-index us) index
+            (stream-output-length us) length))))
 
 (defmethod stream-flush-output ((stream multi-buffered-output-stream))
   (let ((queue (stream-output-buffer stream))
@@ -107,11 +114,11 @@
       (let ((r (stream-flush-output us)))
         (when (and (null r)
                    (= 0 (the fixnum (stream-output-length us))))
+          (stream-read queue)
           (stream-discard-output-buffer us)
-          (stream-read queue))
-        (when (= 0 (the fixnum (queue-length queue)))
-          (setf (stream-output-index stream) 0
-                (stream-output-length stream) 0))
+          (when (= 0 (the fixnum (queue-length queue)))
+            (setf (stream-output-index stream) 0
+                  (stream-output-length stream) 0)))
         r))))
 
 (defun multi-buffered-output-stream (stream)
